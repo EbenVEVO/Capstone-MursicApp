@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "28793704922",
+    "project_id": "mursic-5adb5",
+    "storage_bucket": "mursic-5adb5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28793704922:android:56b3692dab38fc931170e3",
+        "android_client_info": {
+          "package_name": "com.example.capstone_mursicapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3cpPfhOiOVMFKBq-HvDC5OkpDbwgDHc8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

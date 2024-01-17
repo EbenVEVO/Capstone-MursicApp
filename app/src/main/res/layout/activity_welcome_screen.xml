@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintWS"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backdrop"
+    tools:context=".WelcomeScreen">
+
+    <Button
+        android:id="@+id/OGlogin"
+        android:layout_width="508dp"
+        android:layout_height="171dp"
+        android:layout_marginStart="171dp"
+        android:layout_marginBottom="239dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="LOG IN"
+        android:textAlignment="center"
+        android:textSize="70sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/OGregister"
+        android:layout_width="508dp"
+        android:layout_height="171dp"
+        android:layout_marginStart="495dp"
+        android:layout_marginBottom="239dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="SIGN UP"
+        android:textAlignment="center"
+        android:textSize="70sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/OGlogin" />
+</androidx.constraintlayout.widget.ConstraintLayout>
