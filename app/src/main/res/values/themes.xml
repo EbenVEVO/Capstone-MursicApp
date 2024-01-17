@@ -1,0 +1,15 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.CapstoneMursicApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.CapstoneMursicApp" parent="Base.Theme.CapstoneMursicApp" />
+
+    <style name="Theme.MySplash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/_60_1603770_computer_icons_music_sound_music_logo_line_art</item>
+        <item name="postSplashScreenTheme">@style/Base.Theme.CapstoneMursicApp</item>
+    </style>
+</resources>
