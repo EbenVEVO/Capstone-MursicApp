@@ -5,32 +5,37 @@
     android:id="@+id/constraintWS"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/backdrop"
+    android:background="@drawable/background"
     tools:context=".WelcomeScreen">
 
     <Button
         android:id="@+id/OGlogin"
-        android:layout_width="508dp"
-        android:layout_height="171dp"
-        android:layout_marginStart="171dp"
-        android:layout_marginBottom="239dp"
-        android:fontFamily="sans-serif-medium"
+        android:layout_width="186dp"
+        android:layout_height="72dp"
+        android:layout_marginBottom="64dp"
+        android:background="@drawable/button"
+        android:fontFamily="sans-serif-black"
         android:text="LOG IN"
         android:textAlignment="center"
-        android:textSize="70sp"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/OGregister"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/OGregister"
-        android:layout_width="508dp"
-        android:layout_height="171dp"
-        android:layout_marginStart="495dp"
-        android:layout_marginBottom="239dp"
-        android:fontFamily="sans-serif-medium"
+        android:layout_width="186dp"
+        android:layout_height="72dp"
+        android:layout_marginBottom="64dp"
+        android:background="@drawable/button"
+        android:fontFamily="sans-serif-black"
         android:text="SIGN UP"
-        android:textAlignment="center"
-        android:textSize="70sp"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/OGlogin" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

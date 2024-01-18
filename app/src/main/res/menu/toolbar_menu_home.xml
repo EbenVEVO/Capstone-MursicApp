@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:title="Notifications"
+        android:id="@+id/notis"
+        android:icon="@drawable/notifications"
+        app:showAsAction="always"
+
+        />
+    <item
+        android:id="@+id/h_profile"
+        android:title="Home Profile"
+        android:icon="@drawable/pfp"
+        app:showAsAction="always"
+        />
+    <item
+        android:title="Shazam"
+        android:id="@+id/shazam"
+        android:icon="@drawable/shazam_icon_svg"
+        app:showAsAction="always"
+        />
+</menu>

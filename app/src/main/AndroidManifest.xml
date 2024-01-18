@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CapstoneMursicApp">
         <activity
+            android:name=".RegisterUsername"
+            android:exported="false" />
+        <activity
+            android:name=".DOBRegister"
+            android:exported="false" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
