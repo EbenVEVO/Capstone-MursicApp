@@ -91,15 +91,13 @@ public class RegisterActivity extends AppCompatActivity {
                             ref = db.collection("Users").document(userID);
 
                             Map<String,Object> userData = new HashMap<>();
-                            userData.put(username, "Username");
-                            userData.put(email, "Email");
-                            userData.put(date_of_birth, "Date of Birth");
-                            System.out.println(getSupportFragmentManager().isDestroyed());
+                            userData.put( "Username",username);
+                            userData.put("Email", email);
+                            userData.put("Date of Birth", date_of_birth);
                             ref.set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     // Data successfully written to Firestore
-                                    System.out.println(getSupportFragmentManager().isDestroyed());
 
                                     Intent i = new Intent(RegisterActivity.this, MainActivity.class);
                                     startActivity(i);

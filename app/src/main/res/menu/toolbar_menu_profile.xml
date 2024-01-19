@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+        <item
+            android:title="Notifications"
+            android:id="@+id/notis"
+            android:icon="@drawable/notifications"
+            app:showAsAction="always"
+
+            />
+        <item
+        android:title="Profile Menu"
+        android:id="@+id/profile_menu"
+        android:icon="@drawable/baseline_menu_24"
+        app:showAsAction="always">
+            <menu>
+                <item
+                    android:title="Edit Profile"
+                    android:id="@+id/edit_profile"/>
+                <item
+                    android:title="Settings"
+                    android:id="@+id/settings"/>
+
+            </menu>
+        </item>
+</menu>

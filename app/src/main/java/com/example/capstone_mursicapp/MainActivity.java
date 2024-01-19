@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user==null){
-                    System.out.println(getSupportFragmentManager().isDestroyed());
-
                     Intent i = new Intent(MainActivity.this, WelcomeScreen.class);
                     startActivity(i);
                     finish();
@@ -95,6 +93,11 @@ public class MainActivity extends AppCompatActivity {
 
     public  boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.h_profile:
+                ProfileFrag profileFrag = new ProfileFrag();
+                if(!getSupportFragmentManager().isDestroyed())
+                    getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commitNow();
+                return true;
             case R.id.chat:
                 return true;
             case R.id.notis:
@@ -105,16 +108,5 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-    public boolean loadFragment(Fragment fragment, FragmentManager fm) {
-        //switching fragment
-        if (fragment != null) {
-            FragmentTransaction transaction = fm.beginTransaction();
-            transaction.replace(R.id.mainLayout, fragment);
 
-            if (!fm.isDestroyed())
-                transaction.commit();
-            return true;
-        }
-        return false;
-    }
 }
