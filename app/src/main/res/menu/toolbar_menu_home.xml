@@ -10,9 +10,10 @@
         />
     <item
         android:id="@+id/h_profile"
-        android:title="Home Profile"
-        android:icon="@drawable/pfp"
+        android:title="Profile"
         app:showAsAction="always"
+        app:actionLayout="@layout/profile_menu_layout"
+
         />
     <item
         android:title="Shazam"

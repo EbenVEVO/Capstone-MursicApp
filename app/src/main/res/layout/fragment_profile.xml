@@ -27,7 +27,7 @@
             android:textSize="34sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <ImageView
+    <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/profileImg"
         android:layout_width="152dp"
         android:layout_height="152dp"
@@ -38,7 +38,7 @@
         app:layout_constraintTop_toBottomOf="@id/profile_toolbar"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintVertical_bias="0.5"
-        ></ImageView>
+        ></com.mikhaellopez.circularimageview.CircularImageView>
 
     <TextView
         android:id="@+id/username"
@@ -53,11 +53,11 @@
         app:layout_constraintTop_toBottomOf="@+id/profileImg"  />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/pfpadd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="+ ADD"
+        android:text=" ADD"
         android:background="@drawable/button"
         app:layout_constraintStart_toStartOf="@id/username"
         app:layout_constraintEnd_toEndOf="@id/username"

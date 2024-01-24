@@ -46,5 +46,9 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-auth:18.0.0")
     implementation ("com.google.android.gms:play-services-gcm:17.0.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+    implementation("com.google.firebase:firebase-storage")
+    implementation ("com.mikhaellopez:circularimageview:4.3.0")
+    implementation ("com.github.bumptech.glide:glide:4.14.2")
 
 }
