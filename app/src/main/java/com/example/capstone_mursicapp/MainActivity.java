@@ -92,7 +92,8 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     case R.id.friends:
                         FriendsFrag friendsFrag = new FriendsFrag();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, friendsFrag).commit();
+                       if (!getSupportFragmentManager().isDestroyed())
+                            getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, friendsFrag).commit();
                         return true;
 
                 }

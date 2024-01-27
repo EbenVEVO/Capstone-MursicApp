@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,6 +8,10 @@
     android:background="@drawable/background"
     tools:context=".FriendsFrag">
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/friend_toolbar"
         android:layout_width="match_parent"
@@ -26,7 +31,6 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="34sp" />
     </androidx.appcompat.widget.Toolbar>
-
     <androidx.appcompat.widget.SearchView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -39,21 +43,48 @@
         app:layout_constraintTop_toBottomOf="@id/friend_toolbar"
         android:hint="Search Here.." />
 
-    <androidx.recyclerview.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
 
-        android:id="@+id/friendsresults"
-        android:layout_width="match_parent"
-        android:layout_gravity="center"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="493dp"
-        android:orientation="horizontal"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/friendstitle" />
+            android:id="@+id/friendsresults"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="12dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toTopOf="@id/requesttitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/friendstitle" />
 
-    <TextView
+        <TextView
+            android:id="@+id/emptyfriendsview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="No friends found. Search for new friends to add."
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/friendstitle"
+            app:layout_constraintBottom_toTopOf="@id/requesttitle"
+
+            app:layout_constraintVertical_bias="1.0"></TextView>
+        <TextView
+            android:id="@+id/emptyusersearch"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="No users found"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/friendstitle"
+            app:layout_constraintBottom_toTopOf="@id/requesttitle"
+            app:layout_constraintVertical_bias="1.0"></TextView>
+
+        <TextView
         android:id="@+id/friendstitle"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -67,5 +98,46 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/friendssearch" />
 
+    <TextView
+        android:id="@+id/requesttitle"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="54dp"
+        android:text="Requests"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        android:typeface="serif"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/friendsresults" />
+
+        <androidx.recyclerview.widget.RecyclerView
+
+            android:id="@+id/requestresults"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="15dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/requesttitle"
+            />
+        <TextView
+            android:id="@+id/emptyrequestview"
+            android:layout_width="411dp"
+            android:layout_height="61dp"
+            android:layout_marginBottom="840dp"
+            android:gravity="center"
+            android:text="No new friend requests"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/requesttitle"
+
+            app:layout_constraintVertical_bias="1.0"></TextView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

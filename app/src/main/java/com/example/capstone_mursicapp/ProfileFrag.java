@@ -166,6 +166,7 @@ public class ProfileFrag extends Fragment {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             String userID = currentUser.getUid();
+
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
             DocumentReference documentReference = db.collection("Users").document(userID);
