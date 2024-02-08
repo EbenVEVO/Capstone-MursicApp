@@ -6,6 +6,8 @@ public class UserListModel {
     String username;
     String userID;
     String profilePic;
+
+    int buttonType;
     public UserListModel(String username, String userID, String profilePic){
         this.username=username;
         this.profilePic = profilePic;
@@ -34,5 +36,13 @@ public class UserListModel {
 
     public void setProfilePic(String profilePic) {
         this.profilePic = profilePic;
+    }
+
+    public void setButtonType(int buttonType) {
+        this.buttonType = buttonType;
+    }
+
+    public int getButtonType() {
+        return buttonType;
     }
 }

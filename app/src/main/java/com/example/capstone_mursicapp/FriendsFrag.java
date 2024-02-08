@@ -113,8 +113,8 @@ public class FriendsFrag extends Fragment {
                 friendsView.setAdapter(friendsAdapter);
                 if(friendsAdapter.getItemCount()==0) {
                     friendstitle.setText("Add Friends");
-                    emptyFriends.setVisibility(View.GONE);
                     friendsAdapter.setUserList(userList);
+                    friendsAdapter.setNoFriends(true);
                     friendsAdapter.filter(query);
                     friendsAdapter.setButtonType(0);
                     for(UserListModel user: friendsAdapter.getFilteredList()){
@@ -127,7 +127,7 @@ public class FriendsFrag extends Fragment {
                                         for (Map<String, Object> friendRequestMap : friendRequests) {
                                             String requesterID = (String) friendRequestMap.get("User");
                                             if (requesterID.equals(currentUser.getUid())) {
-                                                friendsAdapter.setButtonType(1);
+                                                user.setButtonType(1);
                                                 friendsAdapter.notifyDataSetChanged();
                                             }
                                         }
@@ -137,8 +137,8 @@ public class FriendsFrag extends Fragment {
                         });
                     }
                     friendsAdapter.notifyDataSetChanged();
-                    friendsAdapter.filter(query);
-                    if(friendsAdapter.getItemCount()==0){
+
+                    if(friendsAdapter.getItemCount()==0 ){
                         friendsView.setVisibility(View.GONE);
                         emptySearch.setVisibility(View.VISIBLE);
                     }
@@ -152,7 +152,7 @@ public class FriendsFrag extends Fragment {
                     emptySearch.setVisibility(View.GONE);
                     friendsView.setVisibility(View.VISIBLE);
                     friendsAdapter.setButtonType(2);
-
+                    friendsAdapter.setNoFriends(false);
                 }
                 return true;
             }
@@ -179,6 +179,7 @@ public class FriendsFrag extends Fragment {
             @Override
             public void onClick(View v) {
                 ProfileFrag profileFrag = new ProfileFrag();
+                profileFrag.setIsOwnProfile(true);
                 if (!getActivity().isDestroyed()) {
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commitNow();
                 }

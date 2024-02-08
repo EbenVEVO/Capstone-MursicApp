@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    >
+    <item
+        android:title="Confirm"
+        android:id="@+id/confirm"
+        android:icon="@drawable/baseline_check_24"
+        app:showAsAction="always"
+
+        />
+    <item
+        android:title="Exit"
+        android:id="@+id/exit"
+        android:icon="@drawable/baseline_clear_24"
+        app:showAsAction="always">
+
+    </item>
+</menu>

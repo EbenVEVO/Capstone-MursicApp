@@ -53,12 +53,8 @@ public class HomeFrag extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         toolbar = view.findViewById(R.id.home_toolbar);
-        test = view.findViewById(R.id.test);
         AppCompatActivity activity= (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
-
-
-
 
 
 
@@ -75,7 +71,6 @@ public class HomeFrag extends Fragment {
 
         if (pfpIcon != null) {
             if (getActivity() != null && isAdded()) {
-                System.out.println("entering lkoad");
                 loadProfileImage();
             }
         }
@@ -84,6 +79,7 @@ public class HomeFrag extends Fragment {
             @Override
             public void onClick(View v) {
                 ProfileFrag profileFrag = new ProfileFrag();
+                profileFrag.setIsOwnProfile(true);
                 if (!getActivity().isDestroyed()) {
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commitNow();
                 }

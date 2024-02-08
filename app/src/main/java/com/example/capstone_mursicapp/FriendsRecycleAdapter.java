@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -37,6 +38,8 @@ public class FriendsRecycleAdapter extends RecyclerView.Adapter<FriendsRecycleAd
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     private List<UserListModel> userList, filteredList;
 
+    boolean noFriends;
+
     int buttonType;
 
     public FriendsRecycleAdapter(List<UserListModel> userList){
@@ -49,12 +52,17 @@ public class FriendsRecycleAdapter extends RecyclerView.Adapter<FriendsRecycleAd
 
     }
 
+    public void setNoFriends(boolean noFriends) {
+        this.noFriends = noFriends;
+    }
+
     public void filter(String query){
         filteredList.clear();
         query = query.toLowerCase(Locale.getDefault());
         System.out.println(query);
         if(query.length()==0){
-            filteredList.addAll(userList);
+            if (!noFriends)
+                filteredList.addAll(userList);
         }
         else {
 
@@ -90,7 +98,30 @@ public class FriendsRecycleAdapter extends RecyclerView.Adapter<FriendsRecycleAd
         UserListModel userModel = filteredList.get(position);
         holder.bind(userModel);
 
-        if(getButtonType()==0){
+        holder.profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProfileFrag profileFrag = new ProfileFrag();
+                profileFrag.setIsOwnProfile(false);
+                profileFrag.setUser(userModel);
+                AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commitNow();
+
+
+            }
+        });
+
+        holder.usernameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProfileFrag profileFrag = new ProfileFrag();
+                profileFrag.setIsOwnProfile(false);
+                profileFrag.setUser(userModel);
+                AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commitNow();
+            }
+        });
+        if(userModel.getButtonType()==0){
             holder.addFriend.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -111,7 +142,7 @@ public class FriendsRecycleAdapter extends RecyclerView.Adapter<FriendsRecycleAd
                                     documentReference.update("friendRequests", FieldValue.arrayUnion(friendRequests)).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void unused) {
-                                            setButtonType(1);
+                                            userModel.setButtonType(1);
                                             Log.d("Firestore", "document updated");
                                         }
                                     });
@@ -124,7 +155,7 @@ public class FriendsRecycleAdapter extends RecyclerView.Adapter<FriendsRecycleAd
                 }
             });
         }
-        if(getButtonType()==1){
+        if(userModel.getButtonType()==1){
             holder.addFriend.setText("Requested");
         }
 

@@ -107,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.chat:
                 return true;
+            case R.id.settings:
+                Intent intent = new Intent(getApplicationContext(), Settings.class);
+                startActivity(intent);
             case R.id.notis:
                 return true;
             case R.id.shazam:

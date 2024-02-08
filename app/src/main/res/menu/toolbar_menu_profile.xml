@@ -9,18 +9,10 @@
 
             />
         <item
-        android:title="Profile Menu"
-        android:id="@+id/profile_menu"
-        android:icon="@drawable/baseline_menu_24"
+        android:title="Settings"
+        android:id="@+id/settings"
+        android:icon="@drawable/baseline_settings_24"
         app:showAsAction="always">
-            <menu>
-                <item
-                    android:title="Edit Profile"
-                    android:id="@+id/edit_profile"/>
-                <item
-                    android:title="Settings"
-                    android:id="@+id/settings"/>
 
-            </menu>
         </item>
 </menu>
