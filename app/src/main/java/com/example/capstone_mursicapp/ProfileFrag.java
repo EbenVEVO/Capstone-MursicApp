@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,6 +48,8 @@ import com.bumptech.glide.Glide;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -59,7 +62,16 @@ public class ProfileFrag extends Fragment {
     MenuItem profileMenuItem;
     Boolean isOwnProfile;
     Button editprofile;
+
+    RecyclerView userPost;
+
+
     UserListModel user;
+
+    ImageButton addPost;
+
+    List<PostModel> post;
+    PostAdapter postAdapter;
     String userID;
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -95,7 +107,13 @@ public class ProfileFrag extends Fragment {
         profilePic = view.findViewById(R.id.profileImg);
         toolbar = view.findViewById(R.id.profile_toolbar);
         activity.setSupportActionBar(toolbar);
-        if(isOwnProfile){
+        userPost = view.findViewById(R.id.userpost);
+        addPost = view.findViewById(R.id.addpost);
+
+        postAdapter = new PostAdapter(post);
+        userPost.setAdapter(postAdapter);
+
+        if(isOwnProfile) {
             loadUserProfile();
             editprofile = view.findViewById(R.id.editprofile);
             editprofile.setVisibility(View.VISIBLE);
@@ -107,9 +125,9 @@ public class ProfileFrag extends Fragment {
                     activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, editProfileFrag).commitNow();
                 }
             });
+
         }
         if(!isOwnProfile){
-
             loadNewUserProfile();
         }
 
@@ -207,6 +225,20 @@ public class ProfileFrag extends Fragment {
                 }
             });
 
+
+            loadUserPost(userID);
+            if(post==null && post.isEmpty()){
+                addPost.setVisibility(View.VISIBLE);
+                addPost.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        createPost();
+                    }
+                });
+            }
+            else {
+                addPost.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -241,6 +273,45 @@ public class ProfileFrag extends Fragment {
             }
         });
 
+    }
+
+    public void loadUserPost(String userID){
+        post = new ArrayList<>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference documentReference = db.collection("Posts").document(userID);
+        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    String username = documentSnapshot.getString("pUsername");
+                    String time = documentSnapshot.getString("pTime");
+                    String pfp = documentSnapshot.getString("pProfilePic");
+                    if (pfp == null) {
+                        int defaultProfilePicResId = R.drawable.default_pfp;
+                        pfp = String.valueOf(defaultProfilePicResId);
+                    }
+                    String postImage = documentSnapshot.getString("pImage");
+
+                    PostModel postModel = new PostModel(username, postImage, time, pfp);
+                    post.add(postModel);
+
+                    postAdapter.setPosts(post);
+                    postAdapter.notifyDataSetChanged();
+                }
+                else {
+                    Log.d("Post", "No post found for " + userID);
+                }
+            }
+
+        }).addOnFailureListener(e -> {
+            Log.d("Post", "Error loading post");
+        });
+    }
+
+    public void createPost(){
+
+        Intent intent = new Intent(getActivity(), PostActivity.class);
+        startActivity(intent);
     }
 
 }
