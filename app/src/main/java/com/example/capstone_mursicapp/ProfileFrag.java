@@ -126,6 +126,20 @@ public class ProfileFrag extends Fragment {
                 }
             });
 
+            if(postAdapter.getItemCount()==0){
+
+                addPost.setVisibility(View.VISIBLE);
+                addPost.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        createPost();
+                    }
+                });
+            }
+            else {
+                addPost.setVisibility(View.GONE);
+            }
+
         }
         if(!isOwnProfile){
             loadNewUserProfile();
@@ -227,18 +241,7 @@ public class ProfileFrag extends Fragment {
 
 
             loadUserPost(userID);
-            if(post==null && post.isEmpty()){
-                addPost.setVisibility(View.VISIBLE);
-                addPost.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        createPost();
-                    }
-                });
-            }
-            else {
-                addPost.setVisibility(View.GONE);
-            }
+
         }
     }
 
@@ -272,7 +275,7 @@ public class ProfileFrag extends Fragment {
                 }
             }
         });
-
+        loadUserPost(user.getUserID());
     }
 
     public void loadUserPost(String userID){

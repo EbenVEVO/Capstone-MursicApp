@@ -11,7 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,7 +33,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
 import com.mikhaellopez.circularimageview.CircularImageView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class HomeFrag extends Fragment {
     Toolbar toolbar;
@@ -40,6 +47,9 @@ public class HomeFrag extends Fragment {
     ImageView test;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    List<PostModel> post;
+    PostAdapter postAdapter;
+    RecyclerView postView;
     Fragment currentFragment = this;
     String userID;
 
@@ -55,9 +65,15 @@ public class HomeFrag extends Fragment {
         toolbar = view.findViewById(R.id.home_toolbar);
         AppCompatActivity activity= (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
+        postView = view.findViewById(R.id.postView);
+        postAdapter = new PostAdapter(post);
+        postView.setAdapter(postAdapter);
 
 
+        loadFriendsPost();
 
+
+        Log.d("post", ""+postAdapter.getItemCount());
         return view;
     }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -114,6 +130,56 @@ public class HomeFrag extends Fragment {
                 }
             }
         });
+    }
+    public void loadFriendsPost(){
+        Log.d("Post", "entering load friends");
+        post = new ArrayList<>();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userID = currentUser.getUid();
+        db.collection("Users").document(userID).get().addOnSuccessListener(documentSnapshot -> {
+            Log.d("Post", "in user document");
+            if(documentSnapshot.exists()){
+                List<Map<String,Object>> friends = (List<Map<String, Object>>) documentSnapshot.get("friends");
+
+                Log.d("Post", "getting user friends");
+                if (friends!=null && !friends.isEmpty()){
+                    for (Map<String, Object> friendsMap : friends) {
+                        String friendID = (String) friendsMap.get("User");
+                        Log.d("Post", "found friend"+friendID);
+
+                        db.collection("Posts").document(friendID).get().addOnSuccessListener(documentSnapshot1 -> {
+                            if (documentSnapshot1.exists()){
+                                Log.d("Post", "getting friend post");
+
+                                String pUsername, pTime, pProfilePic, pImage;
+                                pImage = documentSnapshot1.getString("pImage");
+                                pTime = documentSnapshot1.getString("pTime");
+                                pProfilePic = documentSnapshot1.getString("pProfilePic");
+                                if(pProfilePic == null){
+                                    int defaultProfilePicResId = R.drawable.default_pfp;
+                                    pProfilePic = String.valueOf(defaultProfilePicResId);
+                                }
+                                pUsername = documentSnapshot1.getString("pUsername");
+                                PostModel postModel = new PostModel(pUsername, pImage, pTime,pProfilePic);
+                                post.add(postModel);
+                                postAdapter.setPosts(post);
+                                postAdapter.notifyDataSetChanged();
+                                Log.d("Post", "post list:"+post);
+
+
+                            }
+                        }).addOnFailureListener(e -> {
+                            Log.d("Post", "Error loading post");
+                        });
+                    }
+
+                }
+            }
+        });
+        if (postAdapter!= null) {
+            postAdapter.setPosts(post);
+            postAdapter.notifyDataSetChanged();
+        }
     }
 
 }

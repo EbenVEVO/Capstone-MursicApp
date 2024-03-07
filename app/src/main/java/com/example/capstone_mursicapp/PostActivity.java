@@ -86,7 +86,6 @@ public class PostActivity extends AppCompatActivity {
                             String username = documentSnapshot.getString("Username");
                             String profilePic = documentSnapshot.getString("profilePicture");
 
-
                             String timeStamp = String.valueOf(System.currentTimeMillis());
 
 

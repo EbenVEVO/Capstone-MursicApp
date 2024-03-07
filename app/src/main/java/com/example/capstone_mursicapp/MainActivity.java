@@ -72,14 +72,6 @@ public class MainActivity extends AppCompatActivity {
         };
         firebaseAuth.addAuthStateListener(authStateListener);
 
-        signout = findViewById(R.id.signout);
-        signout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-            }
-        });
-
         bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
