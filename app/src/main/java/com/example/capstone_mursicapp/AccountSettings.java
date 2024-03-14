@@ -11,11 +11,7 @@ import android.widget.LinearLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AccountSettings#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class AccountSettings extends Fragment {
     LinearLayout signout;
     @Override
