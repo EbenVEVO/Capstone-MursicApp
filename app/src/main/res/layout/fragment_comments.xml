@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".CommentsFrag"
+    >
+
+
+    <TextView
+        android:id="@+id/commenttitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="COMMENTS"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/comments"
+        android:layout_width="371dp"
+        android:layout_height="331dp"
+        android:layout_marginTop="4dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/commenttitle">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+
+    <EditText
+        android:id="@+id/commenttextfield"
+        android:layout_width="348dp"
+        android:layout_height="51dp"
+        android:layout_marginLeft="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/comments">
+
+    </EditText>
+
+    <TextView
+        android:id="@+id/post"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="POST"
+        android:textColor="@color/light_blue"
+        android:textSize="10dp"
+        app:layout_constraintEnd_toEndOf="@id/commenttextfield"
+        app:layout_constraintTop_toTopOf="@id/commenttextfield"></TextView>
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/profilepic"
+        android:layout_width="50dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toStartOf="@id/commenttextfield"
+        app:layout_constraintTop_toBottomOf="@id/comments" />
+</androidx.constraintlayout.widget.ConstraintLayout>

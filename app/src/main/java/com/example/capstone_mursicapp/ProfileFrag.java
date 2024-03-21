@@ -115,17 +115,7 @@ public class ProfileFrag extends Fragment {
 
         if(isOwnProfile) {
             loadUserProfile();
-            editprofile = view.findViewById(R.id.editprofile);
-            editprofile.setVisibility(View.VISIBLE);
-            editprofile.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    EditProfileFrag editProfileFrag = new EditProfileFrag();
-                    AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, editProfileFrag).commitNow();
-                }
-            });
-
+            System.out.println(postAdapter.getItemCount());
             if(postAdapter.getItemCount()==0){
 
                 addPost.setVisibility(View.VISIBLE);
@@ -139,6 +129,21 @@ public class ProfileFrag extends Fragment {
             else {
                 addPost.setVisibility(View.GONE);
             }
+
+            editprofile = view.findViewById(R.id.editprofile);
+            editprofile.setVisibility(View.VISIBLE);
+            editprofile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    EditProfileFrag editProfileFrag = new EditProfileFrag();
+                    AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, editProfileFrag).commitNow();
+                }
+            });
+
+
+
+
 
         }
         if(!isOwnProfile){
@@ -279,7 +284,7 @@ public class ProfileFrag extends Fragment {
     }
 
     public void loadUserPost(String userID){
-        post = new ArrayList<>();
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference documentReference = db.collection("Posts").document(userID);
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -287,7 +292,7 @@ public class ProfileFrag extends Fragment {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     String username = documentSnapshot.getString("pUsername");
-                    String time = documentSnapshot.getString("pTime");
+                    long time = documentSnapshot.getLong("pTime");
                     String pfp = documentSnapshot.getString("pProfilePic");
                     if (pfp == null) {
                         int defaultProfilePicResId = R.drawable.default_pfp;
@@ -295,7 +300,7 @@ public class ProfileFrag extends Fragment {
                     }
                     String postImage = documentSnapshot.getString("pImage");
 
-                    PostModel postModel = new PostModel(username, postImage, time, pfp);
+                    PostModel postModel = new PostModel(username, postImage, time, pfp,userID);
                     post.add(postModel);
 
                     postAdapter.setPosts(post);

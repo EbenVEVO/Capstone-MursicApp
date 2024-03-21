@@ -151,16 +151,16 @@ public class HomeFrag extends Fragment {
                             if (documentSnapshot1.exists()){
                                 Log.d("Post", "getting friend post");
 
-                                String pUsername, pTime, pProfilePic, pImage;
+                                String pUsername, pProfilePic, pImage;
                                 pImage = documentSnapshot1.getString("pImage");
-                                pTime = documentSnapshot1.getString("pTime");
+                                long pTime = documentSnapshot1.getLong("pTime");
                                 pProfilePic = documentSnapshot1.getString("pProfilePic");
                                 if(pProfilePic == null){
                                     int defaultProfilePicResId = R.drawable.default_pfp;
                                     pProfilePic = String.valueOf(defaultProfilePicResId);
                                 }
                                 pUsername = documentSnapshot1.getString("pUsername");
-                                PostModel postModel = new PostModel(pUsername, pImage, pTime,pProfilePic);
+                                PostModel postModel = new PostModel(pUsername, pImage, pTime,pProfilePic,friendID);
                                 post.add(postModel);
                                 postAdapter.setPosts(post);
                                 postAdapter.notifyDataSetChanged();

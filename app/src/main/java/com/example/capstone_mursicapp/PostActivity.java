@@ -86,7 +86,7 @@ public class PostActivity extends AppCompatActivity {
                             String username = documentSnapshot.getString("Username");
                             String profilePic = documentSnapshot.getString("profilePicture");
 
-                            String timeStamp = String.valueOf(System.currentTimeMillis());
+                            long timeStamp = System.currentTimeMillis();
 
 
                             StorageReference profilePicsRef = storage.getReference().child("Posts/" + userID + "_" + timeStamp);
@@ -94,7 +94,7 @@ public class PostActivity extends AppCompatActivity {
                                 profilePicsRef.getDownloadUrl().addOnSuccessListener(uri -> {
 
                                     String downloadUrl = uri.toString();
-                                    PostModel postModel = new PostModel(username, downloadUrl, timeStamp, profilePic);
+                                    PostModel postModel = new PostModel(username, downloadUrl, timeStamp, profilePic, userID);
                                     db.collection("Posts").document(userID)
                                             .set(postModel).addOnSuccessListener(aVoid->{
 
