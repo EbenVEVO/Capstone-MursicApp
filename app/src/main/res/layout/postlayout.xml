@@ -73,11 +73,11 @@
             android:layout_weight="2"
             android:orientation="horizontal">
 
-            <ImageButton
+            <com.amrdeveloper.reactbutton.ReactButton
                 android:layout_width="42dp"
                 android:layout_height="match_parent"
                 android:id="@+id/like"
-                android:background="@drawable/baseline_thumb_up_24"></ImageButton>
+                android:background="@drawable/baseline_thumb_up_24"></com.amrdeveloper.reactbutton.ReactButton>
 
             <ImageButton
                 android:layout_width="42dp"

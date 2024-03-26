@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -14,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.amrdeveloper.reactbutton.ReactButton;
+import com.amrdeveloper.reactbutton.Reaction;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,35 +60,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         PostModel postModel = posts.get(position);
         holder.bind(postModel);
 
-        holder.like.setOnClickListener(new View.OnClickListener() {
+        holder.like.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                Log.d("post", "Clicked");
-                String postID = postModel.getUserID();
-                Map<String, Object> likes = new HashMap<>();
-                isPostLiked(postID, new PostLikedCallback() {
-                    @Override
-                    public void onPostLiked(boolean isLiked) {
-                        if (!isLiked) {
-                            likes.put("User", currentUser.getUid());
-                            DocumentReference documentReference = db.collection("Posts").document(postID);
-                            documentReference.update("Likes", FieldValue.arrayUnion(likes)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    Log.d("Post", "Post Liked");
-                                    holder.like.setBackgroundColor(Color.RED);
-                                }
-                            });
-                        } else {
-                            Log.d("Post", "Post already liked");
-                        }
-                    }
-                });
-
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d("React", "pressed");
+                return false;
             }
-
         });
-
         holder.comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,7 +126,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         TextView usernameTextView, timeTextView;
         CircularImageView profilePic;
         ImageView postImage;
-        ImageButton like, comment;
+        ReactButton like;
+        ImageButton comment;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             usernameTextView = itemView.findViewById(R.id.username);
@@ -180,16 +162,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             imageLoader.loadImage(postModel.getpImage(), postImage);
 
             String postID = postModel.getUserID();
-            isPostLiked(postID, new PostLikedCallback() {
-                @Override
-                public void onPostLiked(boolean isLiked) {
-                    if (!isLiked) {
-                        like.setBackgroundColor(Color.WHITE);
-                    } else {
-                        like.setBackgroundColor(Color.RED);
-                    }
-                }
-            });
+
+
 
         }
     }
