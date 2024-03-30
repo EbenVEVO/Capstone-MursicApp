@@ -284,7 +284,7 @@ public class ProfileFrag extends Fragment {
     }
 
     public void loadUserPost(String userID){
-
+        post = new ArrayList<>();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference documentReference = db.collection("Posts").document(userID);
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -292,17 +292,18 @@ public class ProfileFrag extends Fragment {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     String username = documentSnapshot.getString("pUsername");
-                    long time = documentSnapshot.getLong("pTime");
-                    String pfp = documentSnapshot.getString("pProfilePic");
+                    if(username!=null){
+                        long time = documentSnapshot.getLong("pTime");
+                        String pfp = documentSnapshot.getString("pProfilePic");
                     if (pfp == null) {
                         int defaultProfilePicResId = R.drawable.default_pfp;
                         pfp = String.valueOf(defaultProfilePicResId);
                     }
+
                     String postImage = documentSnapshot.getString("pImage");
 
                     PostModel postModel = new PostModel(username, postImage, time, pfp,userID);
-                    post.add(postModel);
-
+                    post.add(postModel);}
                     postAdapter.setPosts(post);
                     postAdapter.notifyDataSetChanged();
                 }
