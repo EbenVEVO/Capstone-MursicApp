@@ -113,6 +113,13 @@ public class CommentsFrag extends BottomSheetDialogFragment {
         return view;
     }
 
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstance){
+        super.onViewCreated(view, savedInstance);
+        dialog = (BottomSheetDialog) getDialog();
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.onBackPressed();
+    }
+
     public void loadProfilePic(){
         if (currentUser != null) {
             userID = currentUser.getUid();
