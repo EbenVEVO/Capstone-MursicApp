@@ -8,7 +8,7 @@
 
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/spotifylogin"
         android:layout_width="330dp"
         android:layout_height="96dp"
         android:text="Log in spotify"

@@ -7,10 +7,11 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 
 public class ConnectAccounts extends Fragment {
-
+    Button spotifylogin;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +21,16 @@ public class ConnectAccounts extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_connect_accounts, container, false);
+        View view = inflater.inflate(R.layout.fragment_connect_accounts, container, false);
+
+        spotifylogin = view.findViewById(R.id.spotifylogin);
+
+        spotifylogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        return view;
     }
 }
