@@ -115,7 +115,8 @@ public class EditProfileFrag extends Fragment {
                             });
                         }
                         return true;
-
+                    case R.id.exit:
+                        getFragmentManager().popBackStack();
 
                 }
                 return false;

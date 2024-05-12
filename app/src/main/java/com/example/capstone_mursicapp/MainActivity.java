@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
                     HomeFrag homeFrag = new HomeFrag();
                     if (!getSupportFragmentManager().isDestroyed())
-                        getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, homeFrag).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, homeFrag).addToBackStack(null).commit();
                 }
 
 
@@ -80,12 +80,12 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.home:
                         HomeFrag homeFrag = new HomeFrag();
                         if (!getSupportFragmentManager().isDestroyed())
-                            getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, homeFrag).commit();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, homeFrag).addToBackStack(null).commit();
                         return true;
                     case R.id.friends:
                         FriendsFrag friendsFrag = new FriendsFrag();
                        if (!getSupportFragmentManager().isDestroyed())
-                            getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, friendsFrag).commit();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, friendsFrag).addToBackStack(null).commit();
                         return true;
 
                 }

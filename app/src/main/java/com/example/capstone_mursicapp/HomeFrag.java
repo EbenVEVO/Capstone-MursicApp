@@ -32,7 +32,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.auth.User;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -97,7 +99,7 @@ public class HomeFrag extends Fragment {
                 ProfileFrag profileFrag = new ProfileFrag();
                 profileFrag.setIsOwnProfile(true);
                 if (!getActivity().isDestroyed()) {
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commitNow();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commit();
                 }
             }
         });
@@ -131,55 +133,60 @@ public class HomeFrag extends Fragment {
             }
         });
     }
-    public void loadFriendsPost(){
-        Log.d("Post", "entering load friends");
-        post = new ArrayList<>();
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        String userID = currentUser.getUid();
-        db.collection("Users").document(userID).get().addOnSuccessListener(documentSnapshot -> {
-            Log.d("Post", "in user document");
-            if(documentSnapshot.exists()){
-                List<Map<String,Object>> friends = (List<Map<String, Object>>) documentSnapshot.get("friends");
+        public void loadFriendsPost(){
+            Log.d("Post", "entering load friends");
+            post = new ArrayList<>();
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            String userID = currentUser.getUid();
+            db.collection("Users").document(userID).get().addOnSuccessListener(documentSnapshot -> {
+                Log.d("Post", "in user document");
+                if (documentSnapshot.exists()) {
+                    List<Map<String, Object>> friends = (List<Map<String, Object>>) documentSnapshot.get("friends");
 
-                Log.d("Post", "getting user friends");
-                if (friends!=null && !friends.isEmpty()){
-                    for (Map<String, Object> friendsMap : friends) {
-                        String friendID = (String) friendsMap.get("User");
-                        Log.d("Post", "found friend"+friendID);
+                    Log.d("Post", "getting user friends");
+                    if (friends != null && !friends.isEmpty()) {
+                        for (Map<String, Object> friendsMap : friends) {
+                            String friendID = (String) friendsMap.get("User");
+                            Log.d("Post", "found friend" + friendID);
 
-                        db.collection("Posts").document(friendID).get().addOnSuccessListener(documentSnapshot1 -> {
-                            if (documentSnapshot1.exists()){
-                                Log.d("Post", "getting friend post");
+                            db.collection("Posts").document(friendID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable DocumentSnapshot documentSnapshot1, @Nullable FirebaseFirestoreException e) {
+                                    if (e != null) {
+                                        Log.e("Error", String.valueOf(e));
 
-                                String pUsername, pProfilePic, pImage;
-                                pImage = documentSnapshot1.getString("pImage");
-                                long pTime = documentSnapshot1.getLong("pTime");
-                                pProfilePic = documentSnapshot1.getString("pProfilePic");
-                                if(pProfilePic == null){
-                                    int defaultProfilePicResId = R.drawable.default_pfp;
-                                    pProfilePic = String.valueOf(defaultProfilePicResId);
+                                    }
+                                    if (documentSnapshot1 != null && documentSnapshot1.exists()) {
+                                        post.clear();
+                                        Log.d("Post", "getting friend post");
+
+                                        String pUsername, pProfilePic, pImage;
+                                        pImage = documentSnapshot1.getString("pImage");
+
+                                        pProfilePic = documentSnapshot1.getString("pProfilePic");
+                                        if (pProfilePic == null) {
+                                            int defaultProfilePicResId = R.drawable.default_pfp;
+                                            pProfilePic = String.valueOf(defaultProfilePicResId);
+                                        }
+                                        pUsername = documentSnapshot1.getString("pUsername");
+                                        PostModel postModel = new PostModel(pUsername, pImage, 0, pProfilePic, friendID);
+                                        post.add(postModel);
+                                        postAdapter.setPosts(post);
+                                        postAdapter.notifyDataSetChanged();
+                                        Log.d("Post", "post list:" + post);
+                                    } else {
+                                        Log.d("Post", "Error loading post");
+                                    }
                                 }
-                                pUsername = documentSnapshot1.getString("pUsername");
-                                PostModel postModel = new PostModel(pUsername, pImage, pTime,pProfilePic,friendID);
-                                post.add(postModel);
+                            });
+                            if (postAdapter != null) {
                                 postAdapter.setPosts(post);
                                 postAdapter.notifyDataSetChanged();
-                                Log.d("Post", "post list:"+post);
-
-
                             }
-                        }).addOnFailureListener(e -> {
-                            Log.d("Post", "Error loading post");
-                        });
+                        }
                     }
-
                 }
-            }
-        });
-        if (postAdapter!= null) {
-            postAdapter.setPosts(post);
-            postAdapter.notifyDataSetChanged();
+            });
         }
     }
 
-}
