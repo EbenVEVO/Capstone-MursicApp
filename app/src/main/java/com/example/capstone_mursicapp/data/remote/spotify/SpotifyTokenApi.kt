@@ -1,6 +1,6 @@
-package com.example.apibasictest.data.remote.spotify
+package com.example.capstone_mursicapp.data.remote.spotify
 
-import com.example.apibasictest.data.models.spotify.AccessToken
+import com.example.capstone_mursicapp.data.models.spotify.AccessToken
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded

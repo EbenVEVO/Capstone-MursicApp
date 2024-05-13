@@ -1,4 +1,4 @@
-package com.example.apibasictest.data.models.spotify.me
+package com.example.capstone_mursicapp.data.models.spotify.me
 
 data class Me(
     val country: String,
