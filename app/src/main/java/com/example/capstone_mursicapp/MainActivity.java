@@ -23,7 +23,8 @@ import androidx.appcompat.widget.Toolbar;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.example.apibasictest.data.remote.spotify.AuthenticationManager;
+import com.example.capstone_mursicapp.data.remote.spotify.AuthenticationManager;
+import com.example.capstone_mursicapp.data.remote.spotify.SpotifyManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -36,6 +37,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNav;
     private AuthenticationManager authManager = new AuthenticationManager();
+    private SpotifyManager spotManager = new SpotifyManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +57,29 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Uri uri = getIntent().getData();
-        Log.i("Main", "Before CALLED");
-        Log.i("Main", String.valueOf(uri));
-        //if (uri != null && "apibasictest" == uri.getScheme() && "callback" == uri.getHost()) {
-        authManager.handleSpotCallback(uri);
 
+
+        // ____IF YOU ENTER THE APP VIA CALLBACK URI  SpotifyConstants REDIRECT_URI --> "apibasictest://callback"
+        // ____CALLBACK URI DEFINED IN AuthenticationManager.KT --> "redirect_uri"
+        // ____INTENT FILTER IN AndroidManifest.xml
+        Uri uri = getIntent().getData();
+        if (uri != null && "apibasictest".equals(uri.getScheme()) && "callback".equals(uri.getHost())) {
+            // handle callback on uri to get code
+            String code = authManager.handleCallback(uri);
+            if (code != null) {
+                spotManager.getAccessToken(code);
+            }
+        }
+
+        {
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    spotManager.refreshAccessToken();
+                }
+            }, 0, 3600 * 1000);
+        }
         FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -76,11 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     if (!getSupportFragmentManager().isDestroyed())
                         getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, homeFrag).commit();
                 }
-
-
             }
-
-
         };
         firebaseAuth.addAuthStateListener(authStateListener);
 

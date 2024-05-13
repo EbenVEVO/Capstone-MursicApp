@@ -1,4 +1,4 @@
-package com.example.apibasictest.data.models.spotify
+package com.example.capstone_mursicapp.data.models.spotify
 
 data class AccessToken(
     val access_token: String,
