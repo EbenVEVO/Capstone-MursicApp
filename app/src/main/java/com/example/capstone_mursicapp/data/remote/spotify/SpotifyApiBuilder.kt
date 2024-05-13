@@ -1,4 +1,4 @@
-package com.example.apibasictest.data.remote.spotify
+package com.example.capstone_mursicapp.data.remote.spotify
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

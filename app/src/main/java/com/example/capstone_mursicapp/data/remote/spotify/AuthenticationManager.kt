@@ -1,14 +1,14 @@
-package com.example.apibasictest.data.remote.spotify
+package com.example.capstone_mursicapp.data.remote.spotify
 
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.example.apibasictest.data.SpotifyConstants.CLIENT_ID
-import com.example.apibasictest.data.SpotifyConstants.CODE_VERIFIER
-import com.example.apibasictest.data.SpotifyConstants.REDIRECT_URI
-import com.example.apibasictest.data.SpotifyConstants.SCOPE
-import com.example.apibasictest.data.SpotifyConstants.STATE
+import com.example.capstone_mursicapp.data.SpotifyConstants.CLIENT_ID
+import com.example.capstone_mursicapp.data.SpotifyConstants.CODE_VERIFIER
+import com.example.capstone_mursicapp.data.SpotifyConstants.REDIRECT_URI
+import com.example.capstone_mursicapp.data.SpotifyConstants.SCOPE
+import com.example.capstone_mursicapp.data.SpotifyConstants.STATE
 import java.security.MessageDigest
 import java.util.Base64
 
@@ -46,6 +46,7 @@ class AuthenticationManager {
 
     fun handleSpotCallback(uri: Uri?) {
         Log.i("handleSpotCallback", "WERE IN")
+        //fix later
         if (uri != null && "apibasictest" == uri.scheme && "callback" == uri.host) {
             //handle callback on uri to get code
             handleCallback(uri)?.let {
