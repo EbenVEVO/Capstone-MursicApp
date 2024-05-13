@@ -1,7 +1,9 @@
 package com.example.capstone_mursicapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,6 +42,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     List<PostModel> posts;
+    Context context;
 
     String reactionType;
 
@@ -115,6 +118,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.postlayout, parent, false);
+        context = view.getContext();
         return new PostAdapter.ViewHolder(view);
     }
 
@@ -230,6 +234,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 public void bind(PostModel postModel) {
                     Log.d("test", "binding");
                     usernameTextView.setText(postModel.getpUsername());
+                    like.setBackgroundResource(R.drawable.baseline_thumb_up_24);
                     long currentTime = System.currentTimeMillis();
                     long timePassed = currentTime - postModel.pTime;
                     long hours = TimeUnit.MILLISECONDS.toHours(timePassed) % 24;
@@ -248,6 +253,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                     imageLoader.loadImage(postModel.getpProfilePic(), profilePic);
                     imageLoader.loadImage(postModel.getpImage(), postImage);
 
+
+
                     String postID = postModel.getUserID();
 
                         getReactionType(postID, new reactionCallback() {
@@ -256,7 +263,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                                 Log.d("test", "reaction type found, entering switch");
                                 switch (reactionType){
                                     case "like":
-                                        like.setBackgroundResource(R.drawable.baseline_thumb_up_24);
+                                        like.setBackgroundResource(R.drawable.likedthumb_up_24);
                                         break;
                                     case "heart":
                                         like.setBackgroundResource(R.drawable.heart_reaction);

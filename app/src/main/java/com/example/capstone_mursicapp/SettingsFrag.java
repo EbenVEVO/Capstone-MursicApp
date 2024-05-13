@@ -34,7 +34,7 @@ public class SettingsFrag extends Fragment {
             public void onClick(View v) {
                 ConnectAccounts connectAccounts = new ConnectAccounts();
                 if (!getActivity().isDestroyed())
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.settingslayout, connectAccounts).commit();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.settingslayout, connectAccounts).addToBackStack(null).commit();
             }
         });
         accountsettings.setOnClickListener(new View.OnClickListener() {
@@ -42,7 +42,7 @@ public class SettingsFrag extends Fragment {
             public void onClick(View v) {
                 AccountSettings accountSettings = new AccountSettings();
                 if (!getActivity().isDestroyed())
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.settingslayout, accountSettings).commit();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.settingslayout, accountSettings).addToBackStack(null).commit();
 
             }
         });

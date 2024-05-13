@@ -105,7 +105,7 @@ public class FriendsRecycleAdapter extends RecyclerView.Adapter<FriendsRecycleAd
                 profileFrag.setIsOwnProfile(false);
                 profileFrag.setUser(userModel);
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commitNow();
+                activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).addToBackStack(null).commit();
 
 
             }
@@ -118,7 +118,7 @@ public class FriendsRecycleAdapter extends RecyclerView.Adapter<FriendsRecycleAd
                 profileFrag.setIsOwnProfile(false);
                 profileFrag.setUser(userModel);
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commitNow();
+                activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).addToBackStack(null).commit();
             }
         });
         if(userModel.getButtonType()==0){

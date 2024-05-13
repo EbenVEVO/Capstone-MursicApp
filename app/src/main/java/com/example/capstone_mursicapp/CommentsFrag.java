@@ -27,7 +27,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mikhaellopez.circularimageview.CircularImageView;
@@ -139,40 +141,34 @@ public class CommentsFrag extends BottomSheetDialogFragment {
             }
         });
     }
-    public void loadComments(){
+    public void loadComments() {
         comments = new ArrayList<>();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference collectionRef = db.collection("Posts").document(postID)
                 .collection("Comments");
-        collectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        collectionRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    for(QueryDocumentSnapshot documentSnapshot: task.getResult()){
-                        String userID, username, comment, pfp;
-                        long time;
-                        userID = documentSnapshot.getString("userID");
-                        username = documentSnapshot.getString("username");
-                        comment = documentSnapshot.getString("comment");
-                        pfp = documentSnapshot.getString("profilePic");
-                        time = documentSnapshot.getLong("time");
+            public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.e("Error", String.valueOf(e));
+                }
+                if (querySnapshot != null) {
+                    for (QueryDocumentSnapshot documentSnapshot : querySnapshot) {
+                        String userID = documentSnapshot.getString("userID");
+                        String username = documentSnapshot.getString("username");
+                        String comment = documentSnapshot.getString("comment");
+                        String pfp = documentSnapshot.getString("profilePic");
+                        long time = documentSnapshot.getLong("time");
 
                         CommentsModel commentsModel = new CommentsModel(userID, username, comment, pfp, time);
                         comments.add(commentsModel);
-                        commentAdapter.setComments(comments);
-                        commentAdapter.notifyDataSetChanged();
-
-
                     }
-                }
-                else {
-                    Log.d("Comment", "No comment found for " + postID);
-
+                    commentAdapter.setComments(comments);
+                    commentAdapter.notifyDataSetChanged();
+                } else {
+                    Log.d("Comment", "No comments found.");
                 }
             }
-        }).addOnFailureListener(e -> {
-            Log.d("Comment", "Error loading comments");
         });
     }
-    
 }

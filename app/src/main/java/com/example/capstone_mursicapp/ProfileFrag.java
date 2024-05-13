@@ -49,6 +49,7 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -137,7 +138,7 @@ public class ProfileFrag extends Fragment {
                 public void onClick(View v) {
                     EditProfileFrag editProfileFrag = new EditProfileFrag();
                     AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, editProfileFrag).commitNow();
+                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, editProfileFrag).addToBackStack(null).commit();
                 }
             });
 
@@ -173,7 +174,7 @@ public class ProfileFrag extends Fragment {
                     ProfileFrag profileFrag = new ProfileFrag();
                     profileFrag.setIsOwnProfile(true);
                     if (!getActivity().isDestroyed()) {
-                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commitNow();
+                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).addToBackStack(null).commit();
                     }
                 }
             });
@@ -287,14 +288,17 @@ public class ProfileFrag extends Fragment {
         post = new ArrayList<>();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference documentReference = db.collection("Posts").document(userID);
-        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.e("Error", String.valueOf(e));
+                }
+                if (documentSnapshot != null) {
+                    Log.d("Listner", "-------------");
                     String username = documentSnapshot.getString("pUsername");
-                    if(username!=null){
-                        long time = documentSnapshot.getLong("pTime");
-                        String pfp = documentSnapshot.getString("pProfilePic");
+                    long time = documentSnapshot.getLong("pTime");
+                    String pfp = documentSnapshot.getString("pProfilePic");
                     if (pfp == null) {
                         int defaultProfilePicResId = R.drawable.default_pfp;
                         pfp = String.valueOf(defaultProfilePicResId);
@@ -302,18 +306,14 @@ public class ProfileFrag extends Fragment {
 
                     String postImage = documentSnapshot.getString("pImage");
 
-                    PostModel postModel = new PostModel(username, postImage, time, pfp,userID);
-                    post.add(postModel);}
+                    PostModel postModel = new PostModel(username, postImage, time, pfp, userID);
+                    post.add(postModel);
                     postAdapter.setPosts(post);
                     postAdapter.notifyDataSetChanged();
-                }
-                else {
-                    Log.d("Post", "No post found for " + userID);
-                }
-            }
 
-        }).addOnFailureListener(e -> {
-            Log.d("Post", "Error loading post");
+                }
+
+            }
         });
     }
 

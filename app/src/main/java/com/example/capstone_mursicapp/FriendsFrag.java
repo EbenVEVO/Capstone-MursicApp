@@ -3,6 +3,7 @@ package com.example.capstone_mursicapp;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
@@ -27,7 +28,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -181,7 +184,7 @@ public class FriendsFrag extends Fragment {
                 ProfileFrag profileFrag = new ProfileFrag();
                 profileFrag.setIsOwnProfile(true);
                 if (!getActivity().isDestroyed()) {
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commitNow();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, profileFrag).commit();
                 }
             }
         });
@@ -236,45 +239,49 @@ public class FriendsFrag extends Fragment {
     }
 
     public void getFriendRequest(){
-        //System.out.println("Entering get friendrequest");
         friendRequestList = new ArrayList<>();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userID = currentUser.getUid();
-        db.collection("Users").document(userID).get().addOnSuccessListener(documentSnapshot -> {
-            if(documentSnapshot.exists()){
-                List<Map<String, Object>> friendRequests = (List<Map<String, Object>>) documentSnapshot.get("friendRequests");
-                if (friendRequests != null && !friendRequests.isEmpty()) {
-                    //Log.d("Firebase", "request found");
-                    for (Map<String, Object> friendRequestMap : friendRequests) {
-                        String requesterID = (String) friendRequestMap.get("User");
-                        db.collection("Users").document(requesterID).get().addOnSuccessListener(requesterSnapshot -> {
-                            if (requesterSnapshot.exists()) {
-                                String friendUsername = requesterSnapshot.getString("Username");
-                                if (friendUsername != null) {
-                                    String friendProfilePic = requesterSnapshot.getString("profilePicture");
-                                    int defaultProfilePicResId = R.drawable.default_pfp;
-                                    if (friendProfilePic == null) {
-                                        friendProfilePic = String.valueOf(defaultProfilePicResId);
+        db.collection("Users").document(userID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.e("Error", String.valueOf(e));
+                    }
+                if(documentSnapshot != null){
+                    List<Map<String, Object>> friendRequests = (List<Map<String, Object>>) documentSnapshot.get("friendRequests");
+                    if (friendRequests != null && !friendRequests.isEmpty()) {
+                        for (Map<String, Object> friendRequestMap : friendRequests) {
+                            String requesterID = (String) friendRequestMap.get("User");
+                            db.collection("Users").document(requesterID).get().addOnSuccessListener(requesterSnapshot -> {
+                                if (requesterSnapshot.exists()) {
+                                    String friendUsername = requesterSnapshot.getString("Username");
+                                    if (friendUsername != null) {
+                                        String friendProfilePic = requesterSnapshot.getString("profilePicture");
+                                        int defaultProfilePicResId = R.drawable.default_pfp;
+                                        if (friendProfilePic == null) {
+                                            friendProfilePic = String.valueOf(defaultProfilePicResId);
+                                        }
+                                        UserListModel userListModel = new UserListModel(friendUsername, requesterID, friendProfilePic);
+                                        friendRequestList.add(userListModel);
                                     }
-                                    UserListModel userListModel = new UserListModel(friendUsername, requesterID, friendProfilePic);
-                                    friendRequestList.add(userListModel);
                                 }
-                            }
-                            requestAdapter.setUserList(friendRequestList);
-                            requestAdapter.notifyDataSetChanged();
-                        });
+                                requestAdapter.setUserList(friendRequestList);
+                                requestAdapter.notifyDataSetChanged();
+                            });
+
+                        }
 
                     }
-
+                    else {
+                        //Log.d("Firebase", "No request found");
+                        requestsView.setVisibility(View.GONE);
+                        emptyRequest.setVisibility(View.VISIBLE);
+                    }
                 }
-                else {
-                    //Log.d("Firebase", "No request found");
-                    requestsView.setVisibility(View.GONE);
-                    emptyRequest.setVisibility(View.VISIBLE);
+                else{
+                    Log.d("Firebase", "request document not found");
                 }
-            }
-            else{
-              //  Log.d("Firebase", "request document not found");
             }
         });
         if (requestAdapter!= null) {
@@ -283,50 +290,54 @@ public class FriendsFrag extends Fragment {
         }
     }
 
-
     public void getFriends(){
         System.out.println("Entering get friends");
         friendsList = new ArrayList<>();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userID = currentUser.getUid();
-        db.collection("Users").document(userID).get().addOnSuccessListener(documentSnapshot -> {
-            if(documentSnapshot.exists()){
-               List<Map<String,Object>> friends = (List<Map<String, Object>>) documentSnapshot.get("friends");
-                System.out.println(friends);
+        db.collection("Users").document(userID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.e("Error", String.valueOf(e));
+                    }
+                    if(documentSnapshot != null){
+                            List<Map<String,Object>> friends = (List<Map<String, Object>>) documentSnapshot.get("friends");
 
-               if (friends != null && !friends.isEmpty()) {
-                   for (Map<String, Object> friendsMap : friends) {
-                           Log.d("Firebase", "friends found");
-                           String friendID = (String) friendsMap.get("User");
-                           System.out.println(friendID);
-                           db.collection("Users").document(friendID).get().addOnSuccessListener(friendSnapshot -> {
-                               if (friendSnapshot.exists()) {
-                                   String friendUsername = friendSnapshot.getString("Username");
-                                   if (friendUsername != null) {
-                                       String friendProfilePic = friendSnapshot.getString("profilePicture");
-                                       int defaultProfilePicResId = R.drawable.default_pfp;
-                                       if (friendProfilePic == null) {
-                                           friendProfilePic = String.valueOf(defaultProfilePicResId);
-                                       }
-                                       UserListModel userListModel = new UserListModel(friendUsername, friendID, friendProfilePic);
-                                       friendsList.add(userListModel);
-                                   }
-                               }
-                               friendsAdapter.setUserList(friendsList);
-                               friendsAdapter.setButtonType(2);
-                               friendsAdapter.notifyDataSetChanged();
-                           });
+                            if (friends != null && !friends.isEmpty()) {
+                                for (Map<String, Object> friendsMap : friends) {
+                                    Log.d("Firebase", "friends found");
+                                    String friendID = (String) friendsMap.get("User");
+                                    System.out.println(friendID);
+                                    db.collection("Users").document(friendID).get().addOnSuccessListener(friendSnapshot -> {
+                                        if (friendSnapshot.exists()) {
+                                            String friendUsername = friendSnapshot.getString("Username");
+                                            if (friendUsername != null) {
+                                                String friendProfilePic = friendSnapshot.getString("profilePicture");
+                                                int defaultProfilePicResId = R.drawable.default_pfp;
+                                                if (friendProfilePic == null) {
+                                                    friendProfilePic = String.valueOf(defaultProfilePicResId);
+                                                }
+                                                UserListModel userListModel = new UserListModel(friendUsername, friendID, friendProfilePic);
+                                                friendsList.add(userListModel);
+                                            }
+                                        }
+                                        friendsAdapter.setUserList(friendsList);
+                                        friendsAdapter.setButtonType(2);
+                                        friendsAdapter.notifyDataSetChanged();
+                                    });
 
-                       }
-                   }
-               else {
-                   Log.d("Firebase", "No friends found");
-                   friendsView.setVisibility(View.GONE);
-                   emptyFriends.setVisibility(View.VISIBLE);
-               }
-               }
-            else{
-                Log.d("Firebase", "friends document not found");
+                                }
+                            }
+                            else {
+                                Log.d("Firebase", "No friends found");
+                                friendsView.setVisibility(View.GONE);
+                                emptyFriends.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        else{
+                            Log.d("Firebase", "friends document not found");
+                        }
             }
         });
 
