@@ -1,6 +1,7 @@
 package com.example.capstone_mursicapp.data.remote.spotify
 
 import android.util.Log
+import com.example.capstone_mursicapp.data.SpotifyConstants
 import com.example.capstone_mursicapp.data.SpotifyConstants.CLIENT_ID
 import com.example.capstone_mursicapp.data.SpotifyConstants.CODE_VERIFIER
 import com.example.capstone_mursicapp.data.SpotifyConstants.REDIRECT_URI
@@ -15,8 +16,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-import java.util.Timer
-import java.util.TimerTask
 
 class SpotifyManager {
     //api interfaces
@@ -27,7 +26,6 @@ class SpotifyManager {
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     var currentUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private val documentReference = db.collection("Users").document(currentUser?.uid.toString())
-    private lateinit var localAccessToken: String
     private var expiresIn: Long = 3600
 
     fun getAccessToken(code: String) {
@@ -42,8 +40,8 @@ class SpotifyManager {
                 if (response.isSuccessful) {
                     withContext(Dispatchers.Main) {
                         expiresIn = response.body()!!.expires_in.toLong()
-                        documentReference.update("accessToken", response.body()?.access_token)
-                        localAccessToken = response.body()?.access_token.toString()
+                        SpotifyConstants.globalAccessToken = response.body()?.access_token.toString()
+                        documentReference.update("accessToken", SpotifyConstants.globalAccessToken )
                         documentReference.update("refreshToken", response.body()?.refresh_token)
                         documentReference.update("expiresAt", System.currentTimeMillis() + (expiresIn * 1000))
                         documentReference.update("isSpotifyConnected", true)
@@ -76,8 +74,8 @@ class SpotifyManager {
                         if (response?.isSuccessful == true) {
                             withContext(Dispatchers.Main) {
                                 expiresIn = response.body()!!.expires_in.toLong()
-                                localAccessToken = response.body()?.access_token.toString()
-                                documentReference.update("accessToken", localAccessToken)
+                                SpotifyConstants.globalAccessToken  = response.body()?.access_token.toString()
+                                documentReference.update("accessToken", SpotifyConstants.globalAccessToken )
                                 documentReference.update("refreshToken", response.body()?.refresh_token)
                                 documentReference.update("expiresAt", System.currentTimeMillis() + (response.body()!!.expires_in * 1000))
                             }
@@ -112,7 +110,7 @@ class SpotifyManager {
     fun getMe(callback: (Response<Me>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = spotifyApi.getMe(
-                authorization = "Bearer $localAccessToken"
+                authorization = "Bearer $SpotifyConstants.globalAccessToken "
             )
             withContext(Dispatchers.Main) {
                 callback(response)
@@ -131,7 +129,7 @@ class SpotifyManager {
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = spotifyApi.getSearch(
-                authorization = "Bearer $localAccessToken", q, type, market, limit, offset, includeExternal
+                authorization = "Bearer ${SpotifyConstants.globalAccessToken}", q, type, market, limit, offset, includeExternal
             )
             withContext(Dispatchers.Main) {
                 callback(response)
@@ -157,7 +155,7 @@ class SpotifyManager {
 //fun get(callback: (Response<Me>?) -> Unit) {
 //    CoroutineScope(Dispatchers.IO).launch {
 //        val response = spotifyApi.get(
-//            authorization = "Bearer $localAccessToken"
+//            authorization = "Bearer $SpotifyConstants.globalAccessToken "
 //        )
 //        withContext(Dispatchers.Main) {
 //            callback(response)

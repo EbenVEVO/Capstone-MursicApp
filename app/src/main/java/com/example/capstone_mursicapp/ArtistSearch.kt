@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.Insets
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.recyclerview.widget.RecyclerView
+import com.example.capstone_mursicapp.data.SpotifyConstants
 import com.example.capstone_mursicapp.data.remote.spotify.SpotifyManager
 
 class ArtistSearch : AppCompatActivity() {
@@ -34,7 +35,9 @@ class ArtistSearch : AppCompatActivity() {
                         type = arrayOf("artist")
                 ) { response ->
                     if (response != null) {
-                        Log.i("artist", response.body().toString())
+                        for (i in 0..4) {
+                            Log.i("artist", response.body()!!.artists.items[i].images[0].url.toString())
+                        }
                     } else {
                         Log.e("artist", "error with call")
                     }

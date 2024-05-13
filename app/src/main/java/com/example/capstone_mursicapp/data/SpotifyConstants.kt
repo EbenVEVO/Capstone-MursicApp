@@ -10,6 +10,7 @@ object SpotifyConstants {
     const val SCOPE = "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-follow-read user-read-recently-played user-top-read user-library-read user-read-email user-read-private"
     val CODE_VERIFIER : String by lazy { generateRandomString(128) }
     val STATE: String by lazy { generateRandomString(32) }
+    lateinit var globalAccessToken : String
 
     private fun generateRandomString(len: Int): String {
         Log.i("Random", "generated random string")

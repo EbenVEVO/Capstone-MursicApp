@@ -311,7 +311,7 @@ public class ProfileFrag extends Fragment {
                 if (documentSnapshot != null) {
                     Log.d("Listner", "-------------");
                     String username = documentSnapshot.getString("pUsername");
-                    long time = documentSnapshot.getLong("pTime");
+                    //long time = documentSnapshot.getLong("pTime");
                     String pfp = documentSnapshot.getString("pProfilePic");
                     if (pfp == null) {
                         int defaultProfilePicResId = R.drawable.default_pfp;
@@ -320,7 +320,7 @@ public class ProfileFrag extends Fragment {
 
                     String postImage = documentSnapshot.getString("pImage");
 
-                    PostModel postModel = new PostModel(username, postImage, time, pfp, userID);
+                    PostModel postModel = new PostModel(username, postImage, 0, pfp, userID);
                     post.add(postModel);
                     postAdapter.setPosts(post);
                     postAdapter.notifyDataSetChanged();
