@@ -248,7 +248,8 @@ public class FriendsFrag extends Fragment {
                     if (e != null) {
                         Log.e("Error", String.valueOf(e));
                     }
-                if(documentSnapshot != null){
+                if(documentSnapshot != null && documentSnapshot.exists()){
+                    friendRequestList.clear();
                     List<Map<String, Object>> friendRequests = (List<Map<String, Object>>) documentSnapshot.get("friendRequests");
                     if (friendRequests != null && !friendRequests.isEmpty()) {
                         for (Map<String, Object> friendRequestMap : friendRequests) {

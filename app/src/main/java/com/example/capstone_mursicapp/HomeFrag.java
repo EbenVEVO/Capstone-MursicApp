@@ -148,7 +148,6 @@ public class HomeFrag extends Fragment {
                         for (Map<String, Object> friendsMap : friends) {
                             String friendID = (String) friendsMap.get("User");
                             Log.d("Post", "found friend" + friendID);
-
                             db.collection("Posts").document(friendID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
                                 public void onEvent(@Nullable DocumentSnapshot documentSnapshot1, @Nullable FirebaseFirestoreException e) {
@@ -157,7 +156,7 @@ public class HomeFrag extends Fragment {
 
                                     }
                                     if (documentSnapshot1 != null && documentSnapshot1.exists()) {
-                                        post.clear();
+
                                         Log.d("Post", "getting friend post");
 
                                         String pUsername, pProfilePic, pImage;
@@ -169,20 +168,30 @@ public class HomeFrag extends Fragment {
                                             pProfilePic = String.valueOf(defaultProfilePicResId);
                                         }
                                         pUsername = documentSnapshot1.getString("pUsername");
-                                        PostModel postModel = new PostModel(pUsername, pImage, 0, pProfilePic, friendID);
-                                        post.add(postModel);
+                                        boolean postExists = false;
+                                        for (PostModel existingPost : post) {
+                                            if (existingPost.getUserID().equals(friendID)) {
+                                                postExists = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!postExists) {
+                                            PostModel postModel = new PostModel(pUsername, pImage, 0, pProfilePic, friendID);
+                                            post.add(postModel);
+                                            postAdapter.setPosts(post);
+                                            postAdapter.notifyDataSetChanged();
+                                            Log.d("Post", "post list:" + post);
+                                        } else {
+                                            Log.d("Post", "Error loading post");
+                                        }
+                                    }
+
+                                    if (postAdapter != null) {
                                         postAdapter.setPosts(post);
                                         postAdapter.notifyDataSetChanged();
-                                        Log.d("Post", "post list:" + post);
-                                    } else {
-                                        Log.d("Post", "Error loading post");
                                     }
                                 }
                             });
-                            if (postAdapter != null) {
-                                postAdapter.setPosts(post);
-                                postAdapter.notifyDataSetChanged();
-                            }
                         }
                     }
                 }

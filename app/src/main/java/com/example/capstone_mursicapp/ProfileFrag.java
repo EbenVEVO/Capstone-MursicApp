@@ -57,21 +57,22 @@ import java.util.Map;
 public class ProfileFrag extends Fragment {
 
     CircularImageView pfpIcon;
-    TextView usernameTextView, bioTextView;
+    TextView usernameTextView, bioTextView, artistmemo;
     Uri imageUri;
     ImageView profilePic;
     MenuItem profileMenuItem;
     Boolean isOwnProfile;
-    Button editprofile;
+    Button editprofile, addArtist;
 
-    RecyclerView userPost;
+    RecyclerView userPost, artistview;
 
-
+    Boolean isMusic = false;
     UserListModel user;
 
     ImageButton addPost;
 
     List<PostModel> post;
+    List<ArtistModel> artists;
     PostAdapter postAdapter;
     String userID;
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -110,6 +111,9 @@ public class ProfileFrag extends Fragment {
         activity.setSupportActionBar(toolbar);
         userPost = view.findViewById(R.id.userpost);
         addPost = view.findViewById(R.id.addpost);
+        addArtist = view.findViewById(R.id.addartistbutton);
+        artistmemo = view.findViewById(R.id.addartistmemo);
+        artistview = view.findViewById(R.id.artistview);
 
         postAdapter = new PostAdapter(post);
         userPost.setAdapter(postAdapter);
@@ -248,6 +252,16 @@ public class ProfileFrag extends Fragment {
 
             loadUserPost(userID);
 
+            addArtist.setVisibility(View.VISIBLE);
+
+            addArtist.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), ArtistSearch.class);
+                    startActivity(intent);
+                }
+            });
+
         }
     }
 
@@ -321,6 +335,20 @@ public class ProfileFrag extends Fragment {
 
         Intent intent = new Intent(getActivity(), PostActivity.class);
         startActivity(intent);
+    }
+
+    public void selectArtist(){
+        db.collection("Users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(documentSnapshot.exists()){
+                        isMusic = documentSnapshot.getBoolean("isSpotifyConnected");
+                    }
+                }
+            }
+        });
     }
 
 }

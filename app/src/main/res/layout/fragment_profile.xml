@@ -104,9 +104,52 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="TEST SCROLLLL"
-            android:textSize="100dp"
+            android:id="@+id/artisttitle"
+            android:text="Top Artists"
+            android:fontFamily="serif"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textStyle="bold"
+            android:typeface="serif"
+            android:textSize="20dp"
+            android:layout_marginLeft="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/userpost" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="436dp"
+            android:layout_height="75dp"
+            android:id="@+id/artistview"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/artisttitle"></androidx.recyclerview.widget.RecyclerView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:id="@+id/addartistmemo"
+            android:text="You haven't chosen your top artist! Click below to add them"
+            app:layout_constraintTop_toBottomOf="@id/artisttitle"
+            app:layout_constraintStart_toStartOf="parent"></TextView>
+
+        <Button
+            android:layout_width="114dp"
+            android:id="@+id/addartistbutton"
+            android:layout_height="39dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/button"
+            android:visibility="gone"
+            android:text="ADD"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addartistmemo" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
