@@ -1,49 +1,47 @@
-package com.example.capstone_mursicapp;
+package com.example.capstone_mursicapp
 
-import android.os.Bundle;
-import android.widget.SearchView;
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.SearchView
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.Insets
+import androidx.core.view.OnApplyWindowInsetsListener
+import androidx.recyclerview.widget.RecyclerView
+import com.example.capstone_mursicapp.data.remote.spotify.SpotifyManager
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.RecyclerView;
+class ArtistSearch : AppCompatActivity() {
+    var spotifyManager: SpotifyManager = SpotifyManager()
+    var searchView: SearchView? = null
+    var artistresults: RecyclerView? = null
+    protected override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        this.enableEdgeToEdge()
+        setContentView(R.layout.activity_artist_search)
 
-import com.example.apibasictest.data.remote.spotify.SpotifyManager;
-
-public class ArtistSearch extends AppCompatActivity {
-    SpotifyManager spotManager = new SpotifyManager();
-    SearchView searchView;
-    RecyclerView artistresults;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_artist_search);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
-        searchView = findViewById(R.id.search);
-        artistresults = findViewById(R.id.artistresults);
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
+        searchView = findViewById<SearchView>(R.id.search)
+        artistresults = findViewById<RecyclerView>(R.id.artistresults)
+        searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
             }
 
-            @Override
-            public boolean onQueryTextChange(String query) {
+            override fun onQueryTextChange(query: String): Boolean {
+                Log.i("artist", query)
+                spotifyManager.getSearch(
+                        q = query,
+                        type = arrayOf("artist")
+                ) { response ->
+                    if (response != null) {
+                        Log.i("artist", response.body().toString())
+                    } else {
+                        Log.e("artist", "error with call")
+                    }
 
-                spotManager.getMe();
-                return false;
             }
-        });
-
+            return false
+            }
+        })
     }
 }

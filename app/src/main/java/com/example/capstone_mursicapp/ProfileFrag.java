@@ -118,7 +118,7 @@ public class ProfileFrag extends Fragment {
         postAdapter = new PostAdapter(post);
         userPost.setAdapter(postAdapter);
 
-        if(isOwnProfile) {
+        if(isOwnProfile && isOwnProfile!=null) {
             loadUserProfile();
             System.out.println(postAdapter.getItemCount());
             if(postAdapter.getItemCount()==0){

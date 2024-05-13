@@ -1,6 +1,6 @@
 buildscript{
     val agp_version by extra("8.1.3")
-    val kotlin_version by extra("1.9.24")
+    val kotlin_version by extra("1.9.0")
     val agp_version1 by extra("8.3.0")
     dependencies{
 
