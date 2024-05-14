@@ -1,7 +1,7 @@
 package com.example.capstone_mursicapp.data.remote.spotify
 
 import android.util.Log
-import com.example.capstone_mursicapp.data.SpotifyConstants
+import com.example.capstone_mursicapp.data.SpotifyConstants.localAccessToken
 import com.example.capstone_mursicapp.data.SpotifyConstants.CLIENT_ID
 import com.example.capstone_mursicapp.data.SpotifyConstants.CODE_VERIFIER
 import com.example.capstone_mursicapp.data.SpotifyConstants.REDIRECT_URI
@@ -40,8 +40,8 @@ class SpotifyManager {
                 if (response.isSuccessful) {
                     withContext(Dispatchers.Main) {
                         expiresIn = response.body()!!.expires_in.toLong()
-                        SpotifyConstants.globalAccessToken = response.body()?.access_token.toString()
-                        documentReference.update("accessToken", SpotifyConstants.globalAccessToken )
+                        localAccessToken = response.body()?.access_token.toString()
+                        documentReference.update("accessToken", localAccessToken )
                         documentReference.update("refreshToken", response.body()?.refresh_token)
                         documentReference.update("expiresAt", System.currentTimeMillis() + (expiresIn * 1000))
                         documentReference.update("isSpotifyConnected", true)
@@ -74,8 +74,8 @@ class SpotifyManager {
                         if (response?.isSuccessful == true) {
                             withContext(Dispatchers.Main) {
                                 expiresIn = response.body()!!.expires_in.toLong()
-                                SpotifyConstants.globalAccessToken  = response.body()?.access_token.toString()
-                                documentReference.update("accessToken", SpotifyConstants.globalAccessToken )
+                                localAccessToken  = response.body()?.access_token.toString()
+                                documentReference.update("accessToken", localAccessToken )
                                 documentReference.update("refreshToken", response.body()?.refresh_token)
                                 documentReference.update("expiresAt", System.currentTimeMillis() + (response.body()!!.expires_in * 1000))
                             }
@@ -110,7 +110,7 @@ class SpotifyManager {
     fun getMe(callback: (Response<Me>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = spotifyApi.getMe(
-                authorization = "Bearer $SpotifyConstants.globalAccessToken "
+                authorization = "Bearer $localAccessToken "
             )
             withContext(Dispatchers.Main) {
                 callback(response)
@@ -129,7 +129,7 @@ class SpotifyManager {
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = spotifyApi.getSearch(
-                authorization = "Bearer ${SpotifyConstants.globalAccessToken}", q, type, market, limit, offset, includeExternal
+                authorization = "Bearer ${localAccessToken}", q, type, market, limit, offset, includeExternal
             )
             withContext(Dispatchers.Main) {
                 callback(response)
@@ -155,7 +155,7 @@ class SpotifyManager {
 //fun get(callback: (Response<Me>?) -> Unit) {
 //    CoroutineScope(Dispatchers.IO).launch {
 //        val response = spotifyApi.get(
-//            authorization = "Bearer $SpotifyConstants.globalAccessToken "
+//            authorization = "Bearer $localAccessToken "
 //        )
 //        withContext(Dispatchers.Main) {
 //            callback(response)

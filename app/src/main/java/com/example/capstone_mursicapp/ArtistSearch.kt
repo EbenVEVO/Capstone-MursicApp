@@ -35,12 +35,11 @@ class ArtistSearch : AppCompatActivity() {
                         q = query,
                         type = arrayOf("artist")
                 ) { response ->
-                    if (response != null) {
-                       Log.i("test", response.toString())
-                      /*  for (i in 0..8) {
-                            var artistName:String
-                            var artistImage:String
-                            var artistURI:String
+                    if (response != null && response.body() != null) {
+                        for (i in 0..8) {
+                            var artistName: String
+                            var artistImage: String
+                            var artistURI: String
                             var popularity: Int
 
                             artistName = response.body()!!.artists.items[i].name.toString()
@@ -51,9 +50,12 @@ class ArtistSearch : AppCompatActivity() {
                             val artistModel = ArtistModel(artistName, artistImage, artistURI, popularity)
 
                             resultslist.add(artistModel)
+                            for (item in resultslist) {
+                                Log.i("test", "${ item.artistName } ${ item.artistImage } ${ item.artistURI } ${ item.popularity }")
+                            }
 
 
-                        }*/
+                        }
                     } else {
                         Log.e("artist", "error with call")
                     }
