@@ -5,6 +5,7 @@ import com.example.capstone_mursicapp.data.SpotifyConstants.localAccessToken
 import com.example.capstone_mursicapp.data.SpotifyConstants.CLIENT_ID
 import com.example.capstone_mursicapp.data.SpotifyConstants.CODE_VERIFIER
 import com.example.capstone_mursicapp.data.SpotifyConstants.REDIRECT_URI
+import com.example.capstone_mursicapp.data.SpotifyConstants.expiresIn
 import com.example.capstone_mursicapp.data.models.spotify.currentUser.following.Following
 import com.example.capstone_mursicapp.data.models.spotify.currentUser.me.CurrentUser
 import com.example.capstone_mursicapp.data.models.spotify.playlists.Playlists
@@ -32,7 +33,6 @@ class SpotifyManager {
     var currentUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var documentReference = db.collection("Users").document(currentUser?.uid.toString())
-    private var expiresIn: Long = 3600
 
     fun getAccessToken(code: String) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -209,3 +209,7 @@ class SpotifyManager {
 }
 ///"BQClAO2tUdsLlPcqSqOX2sG7WBebI2OT32QckWEfov7wbHE6ShmTofw7ITC5PuuiaNHSsD0_OOx2OXGqc6xNPw_zkx2d9UBN3mKnN5Ig9ZxyBCBDHMpSqfWgJvk_CWMd3OeZmLQSPAOLivGqg7YyWzv1d1W7UVPipsLEoOLVTlj8Wrg4TCctkRSVYj65rDsS-AUNLHRaWWjrZDbzunBzd64Ln3Bl6JZoOUJbGz5IAGeUbxRsnAY8WkOkUERl7NhYkTT2032-Y0zqbLQ88xypEaiTo4t8787IAUCNs5WZ5HkQOcCv1aIQpw"/
 //expired access token
+
+//
+//
+//

@@ -11,6 +11,13 @@ object SpotifyConstants {
     val STATE: String by lazy { generateRandomString(32) }
     lateinit var localAccessToken : String
 
+    //Just so java can see expiresin
+    var expiresIn: Long = 3600
+    var javaexpiresIn: Long
+        get() = expiresIn
+        set(value) {
+            expiresIn = value
+        }
     private fun generateRandomString(len: Int): String {
         Log.i("Random", "generated random string")
         return (1..len)

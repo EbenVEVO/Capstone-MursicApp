@@ -1,5 +1,6 @@
 package com.example.capstone_mursicapp;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +24,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.example.capstone_mursicapp.data.SpotifyConstants;
 import com.example.capstone_mursicapp.data.remote.spotify.AuthenticationManager;
 import com.example.capstone_mursicapp.data.remote.spotify.SpotifyManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,6 +42,9 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
 public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -50,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNav;
     private AuthenticationManager authManager = new AuthenticationManager();
     private SpotifyManager spotManager = new SpotifyManager();
+    private Timer refreshTimer = null;
+    private Button btViewOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,15 +77,23 @@ public class MainActivity extends AppCompatActivity {
                 spotManager.getAccessToken(code);
             }
         }
-
         {
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
+            refreshTimer = new Timer();
+            MainActivity.this.refreshTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    spotManager.refreshAccessToken();
+                    spotManager.isSpotifyConnected(isConnected -> {
+                        if (isConnected) {
+                            Log.i("Timer", "Initiating token Refresh");
+                            spotManager.refreshAccessToken();
+                        } else {
+                            Log.e("Timer", "Not Connected");
+                        }
+                        return null;
+                    });
                 }
-            }, 0, 3600 * 1000);
+            }, 0, SpotifyConstants.INSTANCE.getExpiresIn() * 1000);
+
         }
         FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override

@@ -25,19 +25,24 @@ class ConnectAccounts : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_connect_accounts, container, false)
+
         spotifylogin = view.findViewById(R.id.spotifylogin)
-        spotifylogin.setOnClickListener {
-            Log.i("MainActivity", "Button Click")
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(authManager.login()))
-            Log.i("MainActivity", "Opening Browser")
-            startActivity(browserIntent)
-        }
+
+        spotifylogin.text = "Checking Spotify Connection..."
+        spotifylogin.isEnabled = false
+
         spotManager.isSpotifyConnected { isConnected ->
-            if (isConnected){
+            if (isConnected) {
                 spotifylogin.isEnabled = false
-                spotifylogin.text = "SPOTIFY CONNECTED"
+                spotifylogin.text = "Spotify Connected"
             } else {
+                spotifylogin.isEnabled = true
                 spotifylogin.text = "LOG IN SPOTIFY"
+                spotifylogin.setOnClickListener {
+                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(authManager.login()))
+                    Log.i("MainActivity", "Opening Browser")
+                    startActivity(browserIntent)
+                }
             }
         }
         return view
