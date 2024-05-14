@@ -12,8 +12,9 @@ import com.example.capstone_mursicapp.data.SpotifyConstants.STATE
 import java.security.MessageDigest
 import java.util.Base64
 
+private val spotManager = SpotifyManager()
+
 class AuthenticationManager {
-    private val spotManager = SpotifyManager()
     @RequiresApi(Build.VERSION_CODES.O)
     fun codeChallenge(codeVerifier: String): String {
         val digest = MessageDigest.getInstance("SHA-256")
@@ -42,22 +43,11 @@ class AuthenticationManager {
         return (builder.build().toString())
     }
 
-
-
-    fun handleSpotCallback(uri: Uri?) {
-        Log.i("handleSpotCallback", "WERE IN")
-        //fix later
-        if (uri != null && "apibasictest" == uri.scheme && "callback" == uri.host) {
-            //handle callback on uri to get code
-            handleCallback(uri)?.let {
-                spotManager.getAccessToken(it)
-            }
-        }
+    private fun handleSpotifyCallback(uri: Uri?) {
     }
 
+
     fun handleCallback(uri: Uri): String? {
-
-
         //if no error and states match, return code if not null
         if (uri.getQueryParameter("error") != null) {
             Log.e("CallbackHandler", "Error on callback ${uri.getQueryParameter("error")}")

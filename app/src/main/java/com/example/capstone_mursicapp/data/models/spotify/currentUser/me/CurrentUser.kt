@@ -1,6 +1,6 @@
-package com.example.capstone_mursicapp.data.models.spotify.me
+package com.example.capstone_mursicapp.data.models.spotify.currentUser.me
 
-data class Me(
+data class CurrentUser(
     val country: String,
     val display_name: String,
     val email: String,

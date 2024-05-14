@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     spotManager.refreshAccessToken();
                 }
-            }, 10*1000, 3600 * 1000);
+            }, 0, 3600 * 1000);
         }
         FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
