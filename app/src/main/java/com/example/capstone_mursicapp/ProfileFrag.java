@@ -42,6 +42,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.bumptech.glide.Glide;
@@ -52,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class ProfileFrag extends Fragment {
@@ -62,7 +64,7 @@ public class ProfileFrag extends Fragment {
     ImageView profilePic;
     MenuItem profileMenuItem;
     Boolean isOwnProfile;
-    Button editprofile, addArtist;
+    Button editprofile, addArtist1, addArtist2;
 
     RecyclerView userPost, artistview;
 
@@ -74,6 +76,7 @@ public class ProfileFrag extends Fragment {
     List<PostModel> post;
     List<ArtistModel> artists;
     PostAdapter postAdapter;
+    TopArtistAdapter artistAdapter;
     String userID;
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -111,16 +114,26 @@ public class ProfileFrag extends Fragment {
         activity.setSupportActionBar(toolbar);
         userPost = view.findViewById(R.id.userpost);
         addPost = view.findViewById(R.id.addpost);
-        addArtist = view.findViewById(R.id.addartistbutton);
+        addArtist1 = view.findViewById(R.id.buttonnoartist);
+        addArtist2 =view.findViewById(R.id.buttonwartist);
         artistmemo = view.findViewById(R.id.addartistmemo);
         artistview = view.findViewById(R.id.artistview);
 
         postAdapter = new PostAdapter(post);
         userPost.setAdapter(postAdapter);
 
+
+        HorizontalItemDecorator itemDecorator = new HorizontalItemDecorator(40);
+        artistview.addItemDecoration(itemDecorator);
+
+        artistAdapter  = new TopArtistAdapter(artists);
+        artistview.setAdapter(artistAdapter);
+
+
+
+
         if(isOwnProfile && isOwnProfile!=null) {
             loadUserProfile();
-            System.out.println(postAdapter.getItemCount());
             if(postAdapter.getItemCount()==0){
 
                 addPost.setVisibility(View.VISIBLE);
@@ -145,10 +158,6 @@ public class ProfileFrag extends Fragment {
                     activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, editProfileFrag).addToBackStack(null).commit();
                 }
             });
-
-
-
-
 
         }
         if(!isOwnProfile){
@@ -249,18 +258,36 @@ public class ProfileFrag extends Fragment {
                 }
             });
 
-
-            loadUserPost(userID);
-
-            addArtist.setVisibility(View.VISIBLE);
-
-            addArtist.setOnClickListener(new View.OnClickListener() {
+            hasArtist(new hasArtistCallback() {
                 @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), ArtistSearch.class);
-                    startActivity(intent);
+                public void hasArtist(boolean hasArtists) {
+                    if(!hasArtists){
+                        artistmemo.setVisibility(View.VISIBLE);
+                        addArtist1.setVisibility(View.VISIBLE);
+                        addArtist1.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(getActivity(), ArtistSearch.class);
+                                startActivity(intent);
+                            }
+                        });
+                    }
+                    else {
+                        addArtist2.setVisibility(View.VISIBLE);
+                        addArtist2.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(getActivity(), ArtistSearch.class);
+                                startActivity(intent);
+                            }
+                        });
+                    }
                 }
             });
+
+            loadUserPost(userID);
+            loadTopArtists(userID);
+
 
         }
     }
@@ -296,6 +323,7 @@ public class ProfileFrag extends Fragment {
             }
         });
         loadUserPost(user.getUserID());
+        loadTopArtists(user.getUserID());
     }
 
     public void loadUserPost(String userID){
@@ -329,6 +357,7 @@ public class ProfileFrag extends Fragment {
 
             }
         });
+
     }
 
     public void createPost(){
@@ -337,14 +366,58 @@ public class ProfileFrag extends Fragment {
         startActivity(intent);
     }
 
-    public void selectArtist(){
-        db.collection("Users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+    interface hasArtistCallback{
+        public void hasArtist(boolean hasArtists);
+    }
+    public void hasArtist(hasArtistCallback artistCallback){
+        db.collection("Users").document(currentUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
                     DocumentSnapshot documentSnapshot = task.getResult();
                     if(documentSnapshot.exists()){
-                        isMusic = documentSnapshot.getBoolean("isSpotifyConnected");
+                        boolean hasArtists = false;
+                        List<Map<String,Object>> userArtists = (List<Map<String, Object>>) documentSnapshot.get("topArtist");
+                        if( userArtists==null || userArtists.isEmpty()){
+                            hasArtists = false;
+                        }
+                        else{
+                            hasArtists = true;
+                        }
+                        artistCallback.hasArtist(hasArtists);
+                    }
+                    else artistCallback.hasArtist(false);
+                }
+            }
+        });
+    }
+
+    public void loadTopArtists(String userID){
+        artists = new ArrayList<>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference documentReference = db.collection("Users").document(userID);
+
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(documentSnapshot.exists()){
+                        List<Map<String, Object>> topArtists = (List<Map<String, Object>>) documentSnapshot.get("topArtist");
+                        if(topArtists!=null && !topArtists.isEmpty()){
+                            for(Map<String,Object> artist: topArtists){
+                                String artistName, artistImage, artistURI;
+                                artistName = (String) artist.get("artistName");
+                                artistImage = (String) artist.get("artistImage");
+                                artistURI = (String) artist.get("artistURI");
+
+                                ArtistModel artistModel = new ArtistModel(artistName,artistImage,artistURI, 0);
+                                artists.add(artistModel);
+                                artistAdapter.setArtist(artists);
+                                artistAdapter.notifyDataSetChanged();
+
+                            }
+                        }
                     }
                 }
             }

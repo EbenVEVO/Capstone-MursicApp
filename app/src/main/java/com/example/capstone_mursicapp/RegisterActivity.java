@@ -97,6 +97,9 @@ public class RegisterActivity extends AppCompatActivity {
                             userData.put("Email", email);
                             userData.put("Date of Birth", date_of_birth);
 
+                            int defaultProfilePicResId = R.drawable.default_pfp;
+                            String defaultpfp = String.valueOf(defaultProfilePicResId);
+                            userData.put("profilePicture", defaultpfp);
                             ref.set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {

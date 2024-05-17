@@ -77,29 +77,33 @@ public class EditProfileFrag extends Fragment {
                 String username;
                 switch (item.getItemId()){
                     case R.id.confirm:
-                        Log.d("TEST", "confim pressed");
                         if (currentUser != null) {
                             String userID = currentUser.getUid();
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
                             DocumentReference documentReference = db.collection("Users").document(userID);
-                            if (usernameexist()){
-                                Toast.makeText(getContext(), "This username is already in use", Toast.LENGTH_SHORT).show();
-                            }
-                            else {
-                                documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        if (documentSnapshot.exists()){
-                                            String currentUsername = documentSnapshot.getString("Username");
-                                            String newUsername = usernameInput.getText().toString();
-                                            if (!newUsername.equals(currentUsername)) {
-                                                documentReference.update("Username", newUsername);
-                                                Toast.makeText(getContext(), "Username changed", Toast.LENGTH_SHORT).show();
+                            usernameexist(new UsernameCheckCallback() {
+                                @Override
+                                public void onUsernameExists(boolean exists) {
+                                    if(exists){
+                                        Toast.makeText(getContext(), "This username is already in use", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else {
+                                        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                if (documentSnapshot.exists()){
+                                                    String currentUsername = documentSnapshot.getString("Username").toLowerCase();
+                                                    String newUsername = usernameInput.getText().toString().toLowerCase();
+                                                    if (!newUsername.equals(currentUsername)) {
+                                                        documentReference.update("Username", newUsername);
+                                                        Toast.makeText(getContext(), "Username changed", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
                                             }
+                                        });
                                     }
-                                    }
-                                });
-                            }
+                                }
+                            });
                             documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -134,28 +138,32 @@ public class EditProfileFrag extends Fragment {
     }
 
 
-    public boolean usernameexist(){
-        AtomicBoolean usernameexist = new AtomicBoolean(false);
+    interface UsernameCheckCallback{
+        void onUsernameExists(boolean exists);
+    }
+    public void usernameexist(UsernameCheckCallback callback){
+
         db.collection("Users").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                boolean usernameexist = false;
                 for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+
                     String userID = documentSnapshot.getId();
                     if (!userID.equals(FirebaseAuth.getInstance().getUid())) {
                         String username = documentSnapshot.getString("Username");
                         if (username.equals(usernameInput.getText().toString())) {
-                           usernameexist.set(true);
-                        }
-                        else {
-                            usernameexist.set(false);
+                           usernameexist = true;
                         }
                     }
                 }
+                callback.onUsernameExists(usernameexist);
 
             } else {
+                callback.onUsernameExists(false);
                 System.out.println("Error getting documents: " + task.getException());
             }
         });
-        return usernameexist.get();
+
     }
     public void chooseProfilePic(){
         Intent i = new Intent();

@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.capstone_mursicapp.data.remote.spotify.SpotifyManager
 
-class ArtistSearch : AppCompatActivity(),ArtistSearchAdapter.onSelection {
+class ArtistSearch : AppCompatActivity() {
     var resultslist: MutableList<ArtistModel> = mutableListOf()
     var spotifyManager: SpotifyManager = SpotifyManager()
     var searchView: SearchView? = null
@@ -76,7 +76,5 @@ class ArtistSearch : AppCompatActivity(),ArtistSearchAdapter.onSelection {
         }
     }
 
-    override fun onArtistSelection(){
-        finish()
-    }
+
 }

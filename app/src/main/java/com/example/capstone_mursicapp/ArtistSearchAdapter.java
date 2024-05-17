@@ -1,11 +1,14 @@
 package com.example.capstone_mursicapp;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,11 +33,12 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapter.ViewHolder> {
+
+    Context context;
     List<ArtistModel> artist;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-    onSelection listener;
 
     public ArtistSearchAdapter(List<ArtistModel> artist){
         this.artist = artist;
@@ -79,16 +83,40 @@ public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapte
 
                 DocumentReference ref = db.collection("Users").document(currentUser.getUid());
 
-                ref.update("topArtist", FieldValue.arrayUnion(topArtist)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(Void unused) {
-                        Log.d("Firestore", "document updated");
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            if(documentSnapshot.exists()){
+                                boolean artistChose = false;
+                                List<Map<String,Object>> userArtists = (List<Map<String, Object>>) documentSnapshot.get("topArtist");
+                                if(userArtists != null){
+                                    for (Map<String,Object> artist: userArtists){
+                                        if(artist.get("artistURI").equals(topArtist.get("artistURI"))){
+                                            Toast.makeText(v.getContext(), "Artist is already chosen", Toast.LENGTH_SHORT).show();
+                                            artistChose = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (!artistChose) {
+                                    ref.update("topArtist", FieldValue.arrayUnion(topArtist)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Toast.makeText(v.getContext(), "Artist selected", Toast.LENGTH_SHORT).show();
+                                            Log.d("Firestore", "document updated");
+                                            ((Activity) v.getContext()).finish();
+                                        }
+                                    });
+                                }
 
+
+                            }
+                        }
                     }
                 });
-              if(listener!=null){
-                  listener.onArtistSelection();
-              }
+
             }
 
         });
@@ -128,7 +156,4 @@ public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapte
 
     }
 
-    public interface onSelection{
-        void onArtistSelection();
-    }
 }

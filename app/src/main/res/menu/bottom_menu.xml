@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/home"
         android:icon="@drawable/home"
         android:title="Home"/>
@@ -7,5 +8,12 @@
         android:title="Friends"
         android:icon="@drawable/friends">
     </item>
+    <item
+        android:id="@+id/h_profile"
+        android:title="Profile"
+        app:showAsAction="always"
+        app:actionLayout="@layout/profile_menu_layout"
+
+        />
 
 </menu>

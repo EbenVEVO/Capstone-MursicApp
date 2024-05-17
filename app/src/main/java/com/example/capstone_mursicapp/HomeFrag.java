@@ -70,7 +70,8 @@ public class HomeFrag extends Fragment {
         postView = view.findViewById(R.id.postView);
         postAdapter = new PostAdapter(post);
         postView.setAdapter(postAdapter);
-
+        VerticalItemDecorator itemDecorator1 = new VerticalItemDecorator(40);
+        postView.addItemDecoration(itemDecorator1);
 
         loadFriendsPost();
 

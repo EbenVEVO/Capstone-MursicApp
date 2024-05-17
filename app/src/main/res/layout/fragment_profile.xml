@@ -102,7 +102,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="300dp"
             android:layout_height="match_parent"
             android:id="@+id/artisttitle"
             android:text="Top Artists"
@@ -117,10 +117,11 @@
             app:layout_constraintTop_toBottomOf="@id/userpost" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="436dp"
-            android:layout_height="75dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:id="@+id/artistview"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="5dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -134,13 +135,13 @@
             android:visibility="gone"
             android:layout_marginTop="10dp"
             android:id="@+id/addartistmemo"
-            android:text="You haven't chosen your top artist! Click below to add them"
+            android:text="You haven't chosen your top artists! Click below to add them"
             app:layout_constraintTop_toBottomOf="@id/artisttitle"
             app:layout_constraintStart_toStartOf="parent"></TextView>
 
         <Button
             android:layout_width="114dp"
-            android:id="@+id/addartistbutton"
+            android:id="@+id/buttonnoartist"
             android:layout_height="39dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/button"
@@ -150,6 +151,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/addartistmemo" />
 
+        <Button
+            android:id="@+id/buttonwartist"
+            android:layout_width="62dp"
+            android:layout_height="24dp"
+            android:background="@drawable/button"
+            android:text="+"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/artisttitle"
+            app:layout_constraintTop_toBottomOf="@id/userpost"></Button>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
