@@ -11,6 +11,7 @@ public class PostModel {
         this.pProfilePic = pProfilePic;
         this.userID = userID;
 
+
     }
 
     public String getpImage() {

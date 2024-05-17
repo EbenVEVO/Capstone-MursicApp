@@ -45,10 +45,10 @@
     </com.makeramen.roundedimageview.RoundedImageView>
 
     <Button
+        android:id="@+id/postButton"
         android:layout_width="179dp"
         android:layout_height="48dp"
-        android:layout_marginTop="40dp"
-        android:id="@+id/postButton"
+        android:layout_marginTop="64dp"
         android:background="@drawable/button"
         android:text="POST"
         app:layout_constraintEnd_toEndOf="parent"

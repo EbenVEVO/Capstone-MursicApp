@@ -2,20 +2,17 @@ package com.example.capstone_mursicapp
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.SearchView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.Insets
-import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.recyclerview.widget.RecyclerView
-import com.example.capstone_mursicapp.data.SpotifyConstants
 import com.example.capstone_mursicapp.data.remote.spotify.SpotifyManager
 
-class ArtistSearch : AppCompatActivity() {
+class ArtistSearch : AppCompatActivity(),ArtistSearchAdapter.onSelection {
     var resultslist: MutableList<ArtistModel> = mutableListOf()
     var spotifyManager: SpotifyManager = SpotifyManager()
     var searchView: SearchView? = null
+    var artistSearchAdapter: ArtistSearchAdapter? = null
     var artistresults: RecyclerView? = null
     protected override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,47 +21,62 @@ class ArtistSearch : AppCompatActivity() {
 
         searchView = findViewById<SearchView>(R.id.search)
         artistresults = findViewById<RecyclerView>(R.id.artistresults)
+
+        artistSearchAdapter = ArtistSearchAdapter(resultslist)
+        artistresults?.let {
+            it.adapter = artistSearchAdapter
+        }
+
         searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
             }
 
             override fun onQueryTextChange(query: String): Boolean {
+                resultslist.clear()
                 Log.i("artist", query)
-                spotifyManager.getSearch(
+                if( query.length > 1) {
+                    spotifyManager.getSearch(
                         q = query,
                         type = arrayOf("artist")
-                ) { response ->
-                    if (response != null && response.body() != null) {
-                        for (i in 0..8) {
-                            var artistName: String
-                            var artistImage: String
-                            var artistURI: String
-                            var popularity: Int
+                    ) { response ->
+                        Log.i("artist", response.toString())
 
-                            artistName = response.body()!!.artists.items[i].name.toString()
-                            artistImage = response.body()!!.artists.items[i].images[0].url.toString()
-                            artistURI = response.body()!!.artists.items[i].uri.toString()
-                            popularity = response.body()!!.artists.items[i].popularity
+                        if (response != null && response.body() != null) {
+                            for (item in response.body()!!.artists.items ) {
+                                var artistName: String
+                                var artistImage: String
+                                var artistURI: String
+                                var popularity: Int
 
-                            val artistModel = ArtistModel(artistName, artistImage, artistURI, popularity)
+                                artistName = item.name.toString()
+                                artistImage = item.images[0].url.toString()
+                                artistURI = item.uri.toString()
+                                popularity = item.popularity
 
-                            resultslist.add(artistModel)
-                            for (item in resultslist) {
-                                Log.i("test", "${ item.artistName } ${ item.artistImage } ${ item.artistURI } ${ item.popularity }")
+                                var artistModel =
+                                    ArtistModel(artistName, artistImage, artistURI, popularity)
+
+                                resultslist.add(artistModel)
+                                artistSearchAdapter!!.setArtist(resultslist)
+                                artistSearchAdapter!!.notifyDataSetChanged()
+
                             }
-
-
+                        } else {
+                            Log.e("artist", "error with call")
                         }
-                    } else {
-                        Log.e("artist", "error with call")
                     }
-                }
-                resultslist.forEach { artistModel ->
-                    Log.i("results", artistModel.artistImage+" "+ artistModel.artistName+ " "+  artistModel.artistURI + " "+ artistModel.popularity )
                 }
             return false
             }
         })
+        if (artistSearchAdapter != null) {
+            artistSearchAdapter!!.setArtist(resultslist)
+            artistSearchAdapter!!.notifyDataSetChanged()
+        }
+    }
+
+    override fun onArtistSelection(){
+        finish()
     }
 }
