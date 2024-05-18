@@ -8,12 +8,6 @@
         android:title="Friends"
         android:icon="@drawable/friends">
     </item>
-    <item
-        android:id="@+id/h_profile"
-        android:title="Profile"
-        app:showAsAction="always"
-        app:actionLayout="@layout/profile_menu_layout"
 
-        />
 
 </menu>

@@ -13,10 +13,13 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
@@ -40,9 +44,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.bumptech.glide.Glide;
@@ -51,6 +58,8 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -59,12 +68,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ProfileFrag extends Fragment {
 
     CircularImageView pfpIcon;
-    TextView usernameTextView, bioTextView, artistmemo;
+    TextView usernameTextView, bioTextView, artistmemo, uploadtext, artisttile, noartist;
     Uri imageUri;
     ImageView profilePic;
     MenuItem profileMenuItem;
     Boolean isOwnProfile;
-    Button editprofile, addArtist1, addArtist2;
+    Button editprofile, addArtist1, addArtist2, addFriend;
 
     RecyclerView userPost, artistview;
 
@@ -72,6 +81,7 @@ public class ProfileFrag extends Fragment {
     UserListModel user;
 
     ImageButton addPost;
+    LinearLayout linearLayout;
 
     List<PostModel> post;
     List<ArtistModel> artists;
@@ -81,6 +91,7 @@ public class ProfileFrag extends Fragment {
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    ConstraintLayout constraintLayout;
     Fragment currentFragment = this;
     Toolbar toolbar;
     FirebaseStorage storage = FirebaseStorage.getInstance();;
@@ -106,14 +117,23 @@ public class ProfileFrag extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         AppCompatActivity activity= (AppCompatActivity) getActivity();
 
-
+        uploadtext = view.findViewById(R.id.uploadtext);
+        editprofile = view.findViewById(R.id.editprofile);
         usernameTextView = view.findViewById(R.id.username);
+
+        constraintLayout = view.findViewById(R.id.constraintLayout);
+
+        linearLayout = view.findViewById(R.id.postholder);
+
+        addFriend = view.findViewById(R.id.addfriend);
+        noartist = view.findViewById(R.id.noartist);
         bioTextView = view.findViewById(R.id.bio);
         profilePic = view.findViewById(R.id.profileImg);
         toolbar = view.findViewById(R.id.profile_toolbar);
         activity.setSupportActionBar(toolbar);
         userPost = view.findViewById(R.id.userpost);
         addPost = view.findViewById(R.id.addpost);
+        artisttile = view.findViewById(R.id.artisttitle);
         addArtist1 = view.findViewById(R.id.buttonnoartist);
         addArtist2 =view.findViewById(R.id.buttonwartist);
         artistmemo = view.findViewById(R.id.addartistmemo);
@@ -134,31 +154,6 @@ public class ProfileFrag extends Fragment {
 
         if(isOwnProfile && isOwnProfile!=null) {
             loadUserProfile();
-            if(postAdapter.getItemCount()==0){
-
-                addPost.setVisibility(View.VISIBLE);
-                addPost.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        createPost();
-                    }
-                });
-            }
-            else {
-                addPost.setVisibility(View.GONE);
-            }
-
-            editprofile = view.findViewById(R.id.editprofile);
-            editprofile.setVisibility(View.VISIBLE);
-            editprofile.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    EditProfileFrag editProfileFrag = new EditProfileFrag();
-                    AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, editProfileFrag).addToBackStack(null).commit();
-                }
-            });
-
         }
         if(!isOwnProfile){
             loadNewUserProfile();
@@ -197,7 +192,86 @@ public class ProfileFrag extends Fragment {
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
+    interface friendAddedCallback{
+        void isUserRequested(boolean requested);
+    }
+    public void isUserRequested(String userID,friendAddedCallback callback){
+        db.collection("Users").document(userID).get().addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                DocumentSnapshot doc = task.getResult();
+                if (doc.exists()) {
+                    List<Map<String, Object>> friendRequests = (List<Map<String, Object>>) doc.get("friendRequests");
+                    if (friendRequests != null && !friendRequests.isEmpty()) {
+                        boolean requested = false;
+                        for (Map<String, Object> friendRequestMap : friendRequests) {
+                            String requesterID = (String) friendRequestMap.get("User");
+                            if (requesterID.equals(currentUser.getUid())) {
+                                requested = true;
+                                break;
+                            }
+                        }
+                        callback.isUserRequested(requested);
+                    }
+                    else {
+                        callback.isUserRequested(false);
+                    }
+                }
+            }
+        });
+    }
+    interface friendCallback{
+        void checkIfFriend(boolean isFriend);
+    }
+    public void checkIfFriend(String userID,friendCallback callback){
+        db.collection("Users").document(userID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.e("Error", String.valueOf(e));
+                }
+                if (documentSnapshot != null) {
+                    List<Map<String, Object>> friends = (List<Map<String, Object>>) documentSnapshot.get("friends");
+                    if (friends != null && !friends.isEmpty()) {
+                        boolean isFriend = false;
+                        for (Map<String, Object> friendsMap : friends) {
+                            Log.d("Firebase", "friends found");
+                            String friendID = (String) friendsMap.get("User");
+                            if (friendID.equals(currentUser.getUid())) {
+                                isFriend = true;
+                                break;
+                            }
+                        }
+                        callback.checkIfFriend(isFriend);
+                    } else {
+                        callback.checkIfFriend(false);
+                    }
+                } else {
+                    callback.checkIfFriend(false);
+                }
+            }
+        });
+    }
+    interface ifPostCallback{
+        void checkForPost(boolean exists);
+    }
 
+    public void checkForPost(String userID, ifPostCallback callback){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference documentReference = db.collection("Posts").document(userID);
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            boolean exists = false;
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(documentSnapshot.exists()){
+                        exists = true;
+                    }
+                }
+                callback.checkForPost(exists);
+            }
+        });
+    }
 
 
     public void loadProfileImage() {
@@ -258,6 +332,43 @@ public class ProfileFrag extends Fragment {
                 }
             });
 
+            editprofile.setVisibility(View.VISIBLE);
+            editprofile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    EditProfileFrag editProfileFrag = new EditProfileFrag();
+                    AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, editProfileFrag).addToBackStack(null).commit();
+                }
+            });
+
+
+            checkForPost(userID, new ifPostCallback() {
+                @Override
+                public void checkForPost(boolean exists) {
+                    if(!exists){
+                        userPost.setVisibility(View.GONE);
+                        addPost.setVisibility(View.VISIBLE);
+                        uploadtext.setVisibility(View.VISIBLE);
+
+                        ConstraintSet constraintSet = new ConstraintSet();
+                        constraintSet.clone(constraintLayout);
+                        int marginInDp = 35;
+                        int marginInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, marginInDp, getResources().getDisplayMetrics());
+                        constraintSet.connect(artisttile.getId(), ConstraintSet.TOP, R.id.addpost, ConstraintSet.BOTTOM, marginInPx);
+                        constraintSet.applyTo(constraintLayout);
+
+                        addPost.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                createPost();
+                            }
+                        });
+                    }
+
+                }
+            });
+
             hasArtist(new hasArtistCallback() {
                 @Override
                 public void hasArtist(boolean hasArtists) {
@@ -286,6 +397,7 @@ public class ProfileFrag extends Fragment {
             });
 
             loadUserPost(userID);
+
             loadTopArtists(userID);
 
 
@@ -294,35 +406,102 @@ public class ProfileFrag extends Fragment {
 
     public void loadNewUserProfile(){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+        addFriend.setVisibility(View.VISIBLE);
         DocumentReference documentReference= db.collection("Users").document(user.getUserID());
-        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        String username = document.getString("Username");
-                        String bio = document.getString("Bio");
-                        if (bio==null){
-                            documentReference.update("Bio", "");
-                        }
-                        String pfp = document.getString("profilePicture");
-                        if (username != null) {
-                            usernameTextView.setText(username);
-                        }
-                        if (bio != null) {
-                            bioTextView.setText(bio);
-                        }
-                        ImageLoader imageLoader = new  ImageLoader(currentFragment.getContext());
-                        imageLoader.loadImage(pfp, profilePic);
+            public void onEvent(@Nullable DocumentSnapshot document, @Nullable FirebaseFirestoreException e) {
+                if(e != null){
+                    Log.e("Error", String.valueOf(e));
 
-
+                }
+                if(document!=null){
+                    String username = document.getString("Username");
+                    String bio = document.getString("Bio");
+                    if (bio==null){
+                        documentReference.update("Bio", "");
                     }
+                    String pfp = document.getString("profilePicture");
+                    if (username != null) {
+                        usernameTextView.setText(username);
+                    }
+                    if (bio != null) {
+                        bioTextView.setText(bio);
+                    }
+                    ImageLoader imageLoader = new  ImageLoader(currentFragment.getContext());
+                    imageLoader.loadImage(pfp, profilePic);
+
+                    isUserRequested(user.getUserID(), new friendAddedCallback() {
+                        @Override
+                        public void isUserRequested(boolean requested) {
+                            if(!requested){
+                                checkIfFriend(user.getUserID(), new friendCallback() {
+                                    @Override
+                                    public void checkIfFriend(boolean isFriend) {
+                                        if(!isFriend){
+                                            addFriend.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    sendFriendRequest(user.username);
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            addFriend.setText("Friends");
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                addFriend.setText("Requested");
+                            }
+                        }
+                    });
+                }
+
+            }
+        });
+
+
+
+
+
+        loadUserPost(user.getUserID());
+        checkForPost(user.getUserID(), new ifPostCallback() {
+            @Override
+            public void checkForPost(boolean exists) {
+                if(!exists){
+                    userPost.setVisibility(View.GONE);
+
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    int marginInDp = 35;
+                    int marginInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, marginInDp, getResources().getDisplayMetrics());
+                    constraintSet.connect(artisttile.getId(), ConstraintSet.TOP, R.id.postholder, ConstraintSet.BOTTOM, marginInPx);
+                    constraintSet.applyTo(constraintLayout);
+
+                }
+                else {
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    int marginInDp = 15;
+                    int marginInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, marginInDp, getResources().getDisplayMetrics());
+                    constraintSet.connect(R.id.userpost, ConstraintSet.TOP, R.id.addfriend, ConstraintSet.BOTTOM, marginInPx);
+                    constraintSet.applyTo(constraintLayout);
+                }
+
+            }
+        });
+
+        hasArtist(new hasArtistCallback() {
+            @Override
+            public void hasArtist(boolean hasArtists) {
+                if(!hasArtists){
+                    noartist.setVisibility(View.VISIBLE);
                 }
             }
         });
-        loadUserPost(user.getUserID());
+
         loadTopArtists(user.getUserID());
     }
 
@@ -336,19 +515,12 @@ public class ProfileFrag extends Fragment {
                 if (e != null) {
                     Log.e("Error", String.valueOf(e));
                 }
-                if (documentSnapshot != null) {
+                if (documentSnapshot != null && documentSnapshot.exists()) {
                     Log.d("Listner", "-------------");
-                    String username = documentSnapshot.getString("pUsername");
+
                     //long time = documentSnapshot.getLong("pTime");
-                    String pfp = documentSnapshot.getString("pProfilePic");
-                    if (pfp == null) {
-                        int defaultProfilePicResId = R.drawable.default_pfp;
-                        pfp = String.valueOf(defaultProfilePicResId);
-                    }
-
                     String postImage = documentSnapshot.getString("pImage");
-
-                    PostModel postModel = new PostModel(username, postImage, 0, pfp, userID);
+                    PostModel postModel = new PostModel(postImage,  0, userID);
                     post.add(postModel);
                     postAdapter.setPosts(post);
                     postAdapter.notifyDataSetChanged();
@@ -418,6 +590,31 @@ public class ProfileFrag extends Fragment {
 
                             }
                         }
+                    }
+                }
+            }
+        });
+    }
+    public void sendFriendRequest(String username){
+        String requestedUserId;
+        List<String> requestedFriends;
+        Map<String, Object> friendRequests= new HashMap<>();
+        Query query = db.collection("Users").whereEqualTo("Username", username);
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    for (QueryDocumentSnapshot doc : task.getResult() ){
+                        String requestedUserID = doc.getId();
+
+                        friendRequests.put("User", currentUser.getUid());
+                        DocumentReference documentReference = db.collection("Users").document(requestedUserID);
+                        documentReference.update("friendRequests", FieldValue.arrayUnion(friendRequests)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Log.d("Firestore", "document updated");
+                            }
+                        });
                     }
                 }
             }

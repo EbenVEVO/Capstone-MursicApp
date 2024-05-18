@@ -20,7 +20,7 @@
 
     <Button
         android:id="@+id/addfriend"
-        android:layout_width="54dp"
+        android:layout_width="65dp"
         android:layout_height="32dp"
         android:layout_gravity="center"
         android:background="@drawable/button"

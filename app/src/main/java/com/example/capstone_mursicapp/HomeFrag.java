@@ -140,10 +140,8 @@ public class HomeFrag extends Fragment {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             String userID = currentUser.getUid();
             db.collection("Users").document(userID).get().addOnSuccessListener(documentSnapshot -> {
-                Log.d("Post", "in user document");
                 if (documentSnapshot.exists()) {
                     List<Map<String, Object>> friends = (List<Map<String, Object>>) documentSnapshot.get("friends");
-
                     Log.d("Post", "getting user friends");
                     if (friends != null && !friends.isEmpty()) {
                         for (Map<String, Object> friendsMap : friends) {
@@ -159,16 +157,8 @@ public class HomeFrag extends Fragment {
                                     if (documentSnapshot1 != null && documentSnapshot1.exists()) {
 
                                         Log.d("Post", "getting friend post");
-
-                                        String pUsername, pProfilePic, pImage;
+                                        String pImage;
                                         pImage = documentSnapshot1.getString("pImage");
-
-                                        pProfilePic = documentSnapshot1.getString("pProfilePic");
-                                        if (pProfilePic == null) {
-                                            int defaultProfilePicResId = R.drawable.default_pfp;
-                                            pProfilePic = String.valueOf(defaultProfilePicResId);
-                                        }
-                                        pUsername = documentSnapshot1.getString("pUsername");
                                         boolean postExists = false;
                                         for (PostModel existingPost : post) {
                                             if (existingPost.getUserID().equals(friendID)) {
@@ -177,7 +167,7 @@ public class HomeFrag extends Fragment {
                                             }
                                         }
                                         if (!postExists) {
-                                            PostModel postModel = new PostModel(pUsername, pImage, 0, pProfilePic, friendID);
+                                            PostModel postModel = new PostModel(pImage, 0, friendID);
                                             post.add(postModel);
                                             postAdapter.setPosts(post);
                                             postAdapter.notifyDataSetChanged();

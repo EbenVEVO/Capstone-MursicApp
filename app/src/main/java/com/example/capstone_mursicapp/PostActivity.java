@@ -94,7 +94,7 @@ public class PostActivity extends AppCompatActivity {
                                 profilePicsRef.getDownloadUrl().addOnSuccessListener(uri -> {
 
                                     String downloadUrl = uri.toString();
-                                    PostModel postModel = new PostModel(username, downloadUrl, timeStamp, profilePic, userID);
+                                    PostModel postModel = new PostModel(downloadUrl, timeStamp, userID);
                                     db.collection("Posts").document(userID)
                                             .set(postModel).addOnSuccessListener(aVoid->{
 

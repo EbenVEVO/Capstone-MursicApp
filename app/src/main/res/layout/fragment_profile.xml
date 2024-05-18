@@ -8,7 +8,9 @@
     tools:context=".ProfileFrag">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:id="@+id/constraintLayout"
         android:layout_height="wrap_content">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/profile_toolbar"
         android:layout_width="match_parent"
@@ -76,6 +78,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         ></Button>
+        <Button
+            android:layout_width="150dp"
+            android:id="@+id/addfriend"
+            android:background="@drawable/button"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="ADD FRIEND"
+            app:layout_constraintTop_toBottomOf="@id/bio"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            ></Button>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/userpost"
@@ -90,17 +105,38 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/uploadtext"
+            android:layout_marginTop="100dp"
+            android:text="Upload your daily ____ "
+            android:textAlignment="center"
+            android:textSize="34sp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/username"
+            tools:layout_editor_absoluteX="0dp"></TextView>
+
         <ImageButton
             android:id="@+id/addpost"
-            android:layout_width="57dp"
-            android:layout_height="41dp"
-            android:layout_marginStart="336dp"
-            android:layout_marginBottom="484dp"
+            android:layout_width="107dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/button"
             android:src="@drawable/baseline_add_24"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/uploadtext" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/postholder"
+            app:layout_constraintTop_toBottomOf="@id/bio"
+            android:layout_marginTop="120dp"
+            android:orientation="horizontal">
 
+        </LinearLayout>
         <TextView
             android:layout_width="300dp"
             android:layout_height="match_parent"
@@ -128,6 +164,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/artisttitle"></androidx.recyclerview.widget.RecyclerView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:id="@+id/noartist"
+            android:text="No Top Artists"
+            app:layout_constraintTop_toBottomOf="@id/artisttitle"
+            app:layout_constraintStart_toStartOf="parent"></TextView>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"

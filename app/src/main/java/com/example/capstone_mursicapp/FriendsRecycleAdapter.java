@@ -160,7 +160,7 @@ public class FriendsRecycleAdapter extends RecyclerView.Adapter<FriendsRecycleAd
         }
 
         if (getButtonType()==2){
-            holder.addFriend.setText("Chat");
+            holder.addFriend.setText("Friends");
         }
 
     }
