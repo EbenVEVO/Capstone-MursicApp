@@ -9,7 +9,18 @@
 
     <style name="Theme.MySplash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/white</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/_60_1603770_computer_icons_music_sound_music_logo_line_art</item>
+        <item name="windowSplashScreenAnimatedIcon">
+            @drawable/_60_1603770_computer_icons_music_sound_music_logo_line_art
+        </item>
         <item name="postSplashScreenTheme">@style/Base.Theme.CapstoneMursicApp</item>
     </style>
+
+    <style name="Theme.CapstoneMursicApp.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.CapstoneMursicApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.CapstoneMursicApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

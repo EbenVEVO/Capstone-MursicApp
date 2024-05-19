@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                             spotManager.refreshAccessToken();
                         } else {
                             Log.e("Timer", "Not Connected");
+                            spotManager.refreshAccessToken(); //temp need to fix error making isSpotifYConnected false when its true
                         }
                         return null;
                     });

@@ -17,6 +17,10 @@
         android:theme="@style/Theme.CapstoneMursicApp"
         tools:targetApi="tiramisu" >
         <activity
+            android:name=".SongActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CapstoneMursicApp" />
+        <activity
             android:name=".ArtistSearch"
             android:exported="false"
             android:label="@string/title_activity_artist_search"

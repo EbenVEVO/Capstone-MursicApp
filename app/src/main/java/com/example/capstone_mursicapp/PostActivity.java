@@ -31,23 +31,44 @@ import com.google.firebase.storage.StorageReference;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
 public class PostActivity extends AppCompatActivity {
     Uri imageUri;
     RoundedImageView postImage;
-    FirebaseStorage storage = FirebaseStorage.getInstance();;
-
-    ImageButton back, music;
-
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    ImageButton back, music, addMusic;
     Button post;
+
+    private String selectedSongId = "";
+    //To get selected position back
+    private ActivityResultLauncher<Intent> songActivityLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                Log.i("IN", "IN");
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        String songId = data.getStringExtra("songId");
+                        if (songId != null) {
+                            selectedSongId = songId;
+                        }
+                    }
+                }
+            }
+    );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
         post = findViewById(R.id.postButton);
         postImage = findViewById(R.id.postImage);
+        addMusic = findViewById(R.id.addMusic);
+
         ActivityResultLauncher<Intent> resultLauncher =  registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
@@ -85,18 +106,24 @@ public class PostActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             String username = documentSnapshot.getString("Username");
                             String profilePic = documentSnapshot.getString("profilePicture");
-
                             long timeStamp = System.currentTimeMillis();
-
 
                             StorageReference profilePicsRef = storage.getReference().child("Posts/" + userID + "_" + timeStamp);
                             profilePicsRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
                                 profilePicsRef.getDownloadUrl().addOnSuccessListener(uri -> {
 
                                     String downloadUrl = uri.toString();
-                                    PostModel postModel = new PostModel(username, downloadUrl, timeStamp, profilePic, userID);
+                                    PostModel postModel = new PostModel(username, downloadUrl, timeStamp, profilePic, selectedSongId, userID);
+                                    Map<String, Object> postData = new HashMap<>();
+                                    postData.put("pUsername", postModel.pUsername);
+                                    postData.put("pProfilePic", postModel.pProfilePic);
+                                    postData.put("pImage", postModel.pImage);
+                                    postData.put("songId", postModel.songId); //NEED TO FIX LATER, JUST USE POST MODEL BUT CANT FIGURE OUT>>>
+                                    postData.put("userID", postModel.userID);
+                                    postData.put("pTime", postModel.pTime);
+                                    Log.i("Test", username + ", " + downloadUrl + ", " + timeStamp + ", " + profilePic + ", " + selectedSongId + ", " + userID);
                                     db.collection("Posts").document(userID)
-                                            .set(postModel).addOnSuccessListener(aVoid->{
+                                            .set(postData).addOnSuccessListener(aVoid->{
 
                                             })
                                             .addOnFailureListener(e -> {
@@ -114,6 +141,17 @@ public class PostActivity extends AppCompatActivity {
                 finish();
             }
 });
+
+        addMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("ButtonActivity", "addMusic Click");
+                Intent intent = new Intent(PostActivity.this, SongActivity.class);
+                songActivityLauncher.launch(intent);
+            }
+        });
+
+
 
 
     }

@@ -319,8 +319,9 @@ public class ProfileFrag extends Fragment {
                     }
 
                     String postImage = documentSnapshot.getString("pImage");
+                    String songId = documentSnapshot.getString("songId");
 
-                    PostModel postModel = new PostModel(username, postImage, 0, pfp, userID);
+                    PostModel postModel = new PostModel(username, postImage, 0, pfp, songId, userID);
                     post.add(postModel);
                     postAdapter.setPosts(post);
                     postAdapter.notifyDataSetChanged();
@@ -332,7 +333,7 @@ public class ProfileFrag extends Fragment {
     }
 
     public void createPost(){
-
+        Log.i("CreatePost", "CreatePost");
         Intent intent = new Intent(getActivity(), PostActivity.class);
         startActivity(intent);
     }

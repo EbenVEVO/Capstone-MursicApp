@@ -25,7 +25,7 @@
 
         <ImageButton
             android:layout_width="44dp"
-            android:id="@+id/music"
+            android:id="@+id/addMusic"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:background="@drawable/baseline_music_note_24" />
@@ -53,6 +53,6 @@
         android:text="POST"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/postImage"></Button>
+        app:layout_constraintTop_toBottomOf="@id/postImage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

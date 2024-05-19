@@ -1,5 +1,6 @@
 package com.example.capstone_mursicapp;
 
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -149,6 +150,7 @@ public class HomeFrag extends Fragment {
                             String friendID = (String) friendsMap.get("User");
                             Log.d("Post", "found friend" + friendID);
                             db.collection("Posts").document(friendID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @SuppressLint("NotifyDataSetChanged")
                                 @Override
                                 public void onEvent(@Nullable DocumentSnapshot documentSnapshot1, @Nullable FirebaseFirestoreException e) {
                                     if (e != null) {
@@ -159,8 +161,9 @@ public class HomeFrag extends Fragment {
 
                                         Log.d("Post", "getting friend post");
 
-                                        String pUsername, pProfilePic, pImage;
+                                        String pUsername, pProfilePic, pImage, songId;
                                         pImage = documentSnapshot1.getString("pImage");
+                                        pImage = documentSnapshot1.getString("songId");
 
                                         pProfilePic = documentSnapshot1.getString("pProfilePic");
                                         if (pProfilePic == null) {
@@ -176,7 +179,7 @@ public class HomeFrag extends Fragment {
                                             }
                                         }
                                         if (!postExists) {
-                                            PostModel postModel = new PostModel(pUsername, pImage, 0, pProfilePic, friendID);
+                                            PostModel postModel = new PostModel(pUsername, pImage, 0, pProfilePic, "test", friendID);
                                             post.add(postModel);
                                             postAdapter.setPosts(post);
                                             postAdapter.notifyDataSetChanged();

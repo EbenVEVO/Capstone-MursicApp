@@ -1,14 +1,15 @@
 package com.example.capstone_mursicapp;
 
 public class PostModel {
-    String pUsername, pProfilePic, pImage, userID;
+    String pUsername, pProfilePic, pImage, songId, userID;
     long pTime;
 
-    public PostModel(String pUsername, String pImage, long pTime, String pProfilePic, String userID){
+    public PostModel(String pUsername, String pImage, long pTime, String pProfilePic, String songId, String userID){
         this.pImage = pImage;
         this.pTime = pTime;
         this.pUsername = pUsername;
         this.pProfilePic = pProfilePic;
+        this.songId = songId;
         this.userID = userID;
 
     }
@@ -51,5 +52,12 @@ public class PostModel {
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public String getSongId() {
+        return pImage;
+    }
+    public String setSongId() {
+        return pImage;
     }
 }
