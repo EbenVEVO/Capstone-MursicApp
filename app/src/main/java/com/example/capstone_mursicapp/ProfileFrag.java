@@ -356,7 +356,7 @@ public class ProfileFrag extends Fragment {
                         uploadtext.setVisibility(View.VISIBLE);
 
                         ConstraintSet constraintSet = new ConstraintSet();
-                        //constraintSet.clone(constraintLayout); //ERROR
+                        constraintSet.clone(constraintLayout); //ERROR
                         int marginInDp = 35;
                         int marginInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, marginInDp, getResources().getDisplayMetrics());
                         constraintSet.connect(artisttile.getId(), ConstraintSet.TOP, R.id.addpost, ConstraintSet.BOTTOM, marginInPx);
@@ -411,6 +411,15 @@ public class ProfileFrag extends Fragment {
                             }
                         });
                     }
+                }
+            });
+
+            addSong.setVisibility(View.VISIBLE);
+            addSong.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), PromptSelection.class);
+                    startActivity(intent);
                 }
             });
 

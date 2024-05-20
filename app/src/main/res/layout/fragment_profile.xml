@@ -225,15 +225,15 @@
             app:layout_constraintStart_toStartOf="parent"></TextView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="233dp"
+            android:layout_width="425dp"
+            android:layout_height="268dp"
             app:layout_constraintTop_toBottomOf="@id/songtitle"
             tools:layout_editor_absoluteX="1dp">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/songsview"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="108dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical"
@@ -248,6 +248,7 @@
                 android:layout_height="46dp"
                 android:background="@drawable/button"
                 android:text="Choose Song Prompt"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/songsview"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"></Button>

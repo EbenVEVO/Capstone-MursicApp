@@ -1,6 +1,7 @@
 package com.example.capstone_mursicapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PromptSelection extends AppCompatActivity {
+public class PromptSelection extends AppCompatActivity implements OnPromptClickListener {
 
     RecyclerView promptsView;
 
@@ -31,11 +32,17 @@ public class PromptSelection extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prompt_selection);
 
-        promptsView.findViewById(R.id.prompts);
-        PromptAdapter promptAdapter = new PromptAdapter(prompts);
+        promptsView = findViewById(R.id.prompts);
+        PromptAdapter promptAdapter = new PromptAdapter(prompts, this);
         promptsView.setAdapter(promptAdapter);
 
-        VerticalItemDecorator itemDecorator = new VerticalItemDecorator(20);
+        VerticalItemDecorator itemDecorator = new VerticalItemDecorator(50);
         promptsView.addItemDecoration(itemDecorator);
+    }
+
+    @Override
+    public void onClick(String prompt) {
+        Fragment frag = SongPromptConfrim.newInstance(prompt);
+        getSupportFragmentManager().beginTransaction().replace(R.id.promptselection, frag).addToBackStack(null).commit();
     }
 }
