@@ -1,28 +1,36 @@
 package com.example.capstone_mursicapp;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.capstone_mursicapp.data.remote.spotify.SpotifyManager;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
@@ -31,136 +39,171 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
-    private List<PostModel> posts;
-    private FirebaseFirestore db;
-    private FirebaseUser currentUser;
-    private Context context;
 
-    private String reactionType;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    List<PostModel> posts;
+    Context context;
 
-    private SpotifyManager spotManager;
+    String reactionType;
 
-    public PostAdapter(List<PostModel> posts) {
-        this.posts = posts;
-        this.db = FirebaseFirestore.getInstance();
-        this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        this.spotManager = new SpotifyManager();
-    }
-
-    public void setPosts(List<PostModel> post) {
-    }
-
-    public interface PostLikedCallback {
+    interface PostLikedCallback {
         void onPostLiked(boolean isLiked);
     }
 
     public void isPostLiked(String postID, PostLikedCallback callback) {
-        db.collection("Posts").document(postID).get().addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-            DocumentSnapshot doc = task.getResult();
-            if (doc.exists()) {
-                List<Map<String, Object>> likes = (List<Map<String, Object>>) doc.get("Likes");
-                boolean isLiked = false;
-                if (likes != null && !likes.isEmpty()) {
-                    for (Map<String, Object> likesMap : likes) {
-                        String userID = (String) likesMap.get("User");
-                        if (currentUser.getUid().equals(userID)) {
-                            isLiked = true;
-                            break;
+        DocumentReference documentReference = db.collection("Posts").document(postID);
+        documentReference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot doc = task.getResult();
+                if (doc.exists()) {
+                    List<Map<String, Object>> likes = (List<Map<String, Object>>) doc.get("Likes");
+                    boolean isLiked = false;
+                    if (likes != null && !likes.isEmpty()) {
+                        for (Map<String, Object> likesMap : likes) {
+                            String userID = (String) likesMap.get("User");
+                            if (currentUser.getUid().equals(userID)) {
+                                isLiked = true;
+                                break;
+                            }
                         }
+                        callback.onPostLiked(isLiked);
+                    } else {
+                        callback.onPostLiked(isLiked);
                     }
-                    callback.onPostLiked(isLiked);
-                } else {
-                    callback.onPostLiked(isLiked);
                 }
+            } else {
+                Log.e("isPostLiked", "Error getting document", task.getException());
+                callback.onPostLiked(false); // Handle error case
             }
-        } else {
-            Log.e("isPostLiked", "Error getting document", task.getException());
-            callback.onPostLiked(false);
-        }
-    });
+        });
     }
 
-    public interface ReactionCallback {
+    interface reactionCallback {
         void reactionFound(String reactionType);
     }
 
-    public void getReactionType(String postID, ReactionCallback callback) {
-        db.collection("Posts").document(postID).get().addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-            DocumentSnapshot doc = task.getResult();
-            if (doc.exists()) {
-                List<Map<String, Object>> likes = (List<Map<String, Object>>) doc.get("Likes");
-                if (likes != null && !likes.isEmpty()) {
-                    for (Map<String, Object> likesMap : likes) {
-                        String user = (String) likesMap.get("User");
-                        if (user.equals(currentUser.getUid())) {
-                            reactionType = (String) likesMap.get("ReactionType");
-                            callback.reactionFound(reactionType);
-                            return;
+    public void getReactionType(String postID, reactionCallback callback) {
+        DocumentReference documentReference = db.collection("Posts").document(postID);
+        documentReference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot doc = task.getResult();
+                if (doc.exists()) {
+                    List<Map<String, Object>> likes = (List<Map<String, Object>>) doc.get("Likes");
+                    if (likes != null && !likes.isEmpty()) {
+                        for (Map<String, Object> likesMap : likes) {
+                            String user = (String) likesMap.get("User");
+                            if (user.equals(currentUser.getUid())) {
+                                reactionType = (String) likesMap.get("ReactionType");
+                                callback.reactionFound(reactionType);
+                            }
                         }
                     }
                 }
             }
+
+        });
+        if (reactionType == null) {
             callback.reactionFound("");
         }
-    });
+
     }
 
+    public void setPosts(List<PostModel> posts) {
+        this.posts = posts;
+    }
+
+    public PostAdapter(List<PostModel> posts) {
+        this.posts = posts;
+
+    }
+
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.postlayout, parent, false);
         context = view.getContext();
-        return new ViewHolder(view);
+        return new PostAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PostAdapter.ViewHolder holder, int position) {
         PostModel postModel = posts.get(position);
         holder.bind(postModel);
 
-        holder.like.setOnClickListener(v -> {
-        Log.d("post", "Clicked");
-        String postID = postModel.getUserID();
-        Map<String, Object> likes = new HashMap<>();
+        holder.like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("post", "Clicked");
+                String postID = postModel.getUserID();
+                Map<String, Object> likes = new HashMap<>();
 
-        isPostLiked(postID, isLiked -> {
-        if (!isLiked) {
-            Log.d("Post", "Post not Liked by user");
-            likes.put("User", currentUser.getUid());
-            likes.put("ReactionType", "like");
-            db.collection("Posts").document(postID).update("Likes", FieldValue.arrayUnion(likes))
-                .addOnSuccessListener(aVoid -> Log.d("Post", "Post Liked"));
-        }
-        getReactionType(postID, reactionType -> {
-        if ("like".equals(reactionType) && isLiked) {
-            Log.d("Post", "Post already liked");
-            String userID = currentUser.getUid();
-            Map<String, Object> removeLike = new HashMap<>();
-            removeLike.put("User", userID);
-            removeLike.put("ReactionType", reactionType);
-            db.collection("Posts").document(postID).update("Likes", FieldValue.arrayRemove(removeLike))
-                .addOnSuccessListener(aVoid -> Log.d("Firestore", "removed like"));
-        }
-    });
-    });
-    });
+                isPostLiked(postID, new PostLikedCallback() {
+                    @Override
+                    public void onPostLiked(boolean isLiked) {
+                        if (!isLiked) {
+                            Log.d("Post", "Post not Liked by user");
+                            likes.put("User", currentUser.getUid());
+                            likes.put("ReactionType", "like");
+                            DocumentReference documentReference = db.collection("Posts").document(postID);
+                            documentReference.update("Likes", FieldValue.arrayUnion(likes)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    Log.d("Post", "Post Liked");
+                                }
+                            });
+                        }
+                        getReactionType(postID, new reactionCallback() {
+                            @Override
+                            public void reactionFound(String reactionType) {
+                                if (reactionType.equals("like") && isLiked) {
+                                    Log.d("Post", "Post already liked");
+                                    String userID = currentUser.getUid();
+                                    DocumentReference documentReference = db.collection("Posts").document(postID);
+                                    Map<String, Object> removeLike = new HashMap<>();
+                                    removeLike.put("User", userID);
+                                    removeLike.put("ReactionType", reactionType);
+                                    documentReference.update("Likes", FieldValue.arrayRemove(removeLike)).addOnSuccessListener(new OnSuccessListener<Void>() {
 
-        holder.like.setOnLongClickListener(v -> {
-        AppCompatActivity activity = (AppCompatActivity) v.getContext();
-        Reactions reactions = new Reactions(postModel.getUserID());
-        reactions.show(activity.getSupportFragmentManager(), reactions.getClass().getSimpleName());
-        return false;
-    });
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Log.d("Firestore", "removed like");
 
-        holder.comment.setOnClickListener(v -> {
-        String postID = postModel.getUserID();
-        AppCompatActivity activity = (AppCompatActivity) v.getContext();
-        CommentsFrag dialog = new CommentsFrag(postID);
-        dialog.show(activity.getSupportFragmentManager(), "");
-    });
+                                        }
+
+                                    });
+
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        holder.like.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                Reactions reactions = new Reactions(postModel.getUserID());
+                reactions.show(activity.getSupportFragmentManager(), reactions.getClass().getSimpleName());
+                return false;
+            }
+        });
+
+        holder.comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String postID = postModel.getUserID();
+                AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                CommentsFrag dialog = new CommentsFrag(postID);
+                dialog.show(activity.getSupportFragmentManager(), "");
+            }
+        });
+
     }
+
 
     @Override
     public int getItemCount() {
@@ -173,15 +216,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView usernameTextView;
-        TextView timeTextView;
+        TextView usernameTextView, timeTextView, testtext;
         CircularImageView profilePic;
-        ImageView postImage;
-        ImageView songImage;
-        ImageButton like;
-        ImageButton comment;
+        ImageView postImage, songImage;
+        ImageButton like, comment;
 
-        public ViewHolder(View itemView) {
+
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
             usernameTextView = itemView.findViewById(R.id.username);
             profilePic = itemView.findViewById(R.id.pfp);
@@ -190,29 +231,34 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             like = itemView.findViewById(R.id.like);
             comment = itemView.findViewById(R.id.comment);
             songImage = itemView.findViewById(R.id.songImage);
+
         }
 
         public void bind(PostModel postModel) {
             String postID = postModel.getUserID();
-            db.collection("Users").document(postID).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    String username = document.getString("Username");
-                    String pfp = document.getString("profilePicture");
-                    if (pfp == null) {
-                        int defaultProfilePicResId = R.drawable.default_pfp;
-                        pfp = String.valueOf(defaultProfilePicResId);
+            DocumentReference documentReference = db.collection("Users").document(postID);
+            documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            String username = document.getString("Username");
+                            String pfp = document.getString("profilePicture");
+                            if (pfp == null) {
+                                int defaultProfilePicResId = R.drawable.default_pfp;
+                                pfp = String.valueOf(defaultProfilePicResId);
+                            }
+                            usernameTextView.setText(username);
+                            ImageLoader imageLoader = new ImageLoader(itemView.getContext());
+                            imageLoader.loadImage(pfp, profilePic);
+
+                        }
+
                     }
-                    usernameTextView.setText(username);
-                    ImageLoader imageLoader = new ImageLoader(itemView.getContext());
-                    imageLoader.loadImage(pfp, profilePic);
-
-
 
                 }
-            }
-        });
+            });
 
             like.setBackgroundResource(R.drawable.baseline_thumb_up_24);
             Timestamp currentTime = Timestamp.now();
@@ -224,42 +270,49 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
             String timeStamp;
             if (hours < 1) {
-                timeStamp = minutes + "ms ago";
+                timeStamp = String.valueOf(minutes) + "ms ago";
             } else {
-                timeStamp = hours + "hrs ago";
+                timeStamp = String.valueOf(hours) + "hrs ago";
             }
 
             timeTextView.setText(timeStamp);
             ImageLoader imageLoader = new ImageLoader(itemView.getContext());
             imageLoader.loadImage(postModel.getpImage(), postImage);
+            getReactionType(postID, new reactionCallback() {
+                @Override
+                public void reactionFound(String reactionType) {
+                    Log.d("test", "reaction type found, entering switch");
+                    switch (reactionType) {
+                        case "like":
+                            like.setBackgroundResource(R.drawable.likedthumb_up_24);
+                            break;
+                        case "heart":
+                            like.setBackgroundResource(R.drawable.heart_reaction);
 
-            getReactionType(postID, reactionType -> {
-            Log.d("test", "reaction type found, entering switch");
-            switch (reactionType) {
-                case "like":
-                like.setBackgroundResource(R.drawable.likedthumb_up_24);
-                break;
-                case "heart":
-                like.setBackgroundResource(R.drawable.heart_reaction);
-                break;
-                case "love":
-                like.setBackgroundResource(R.drawable.love_reaction);
-                break;
-                case "laugh":
-                like.setBackgroundResource(R.drawable.laugh_reaction);
-                break;
-                case "sleep":
-                like.setBackgroundResource(R.drawable.sleep_reaction);
-                break;
-                case "trash":
-                like.setBackgroundResource(R.drawable.trash_reaction);
-                break;
-            }
-        });
-            String songId = postModel.getSongID();
-            Log.e("a", String.valueOf(songId == null));
-            SongRetriever songRetriever = new SongRetriever();
+                            break;
+                        case "love":
+                            like.setBackgroundResource(R.drawable.love_reaction);
+                            break;
+                        case "laugh":
+                            like.setBackgroundResource(R.drawable.laugh_reaction);
+                            break;
+                        case "sleep":
+                            like.setBackgroundResource(R.drawable.sleep_reaction);
+                            break;
+                        case "trash":
+                            like.setBackgroundResource(R.drawable.trash_reaction);
+                            break;
+
+
+                    }
+                }
+            });
+
+            String songID = postModel.getSongID();
+
 
         }
+
+
     }
 }
