@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -260,9 +261,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             });
 
             like.setBackgroundResource(R.drawable.baseline_thumb_up_24);
-            long currentTime = System.currentTimeMillis();
-            long timePassed = currentTime - postModel.pTime;
-            long hours = TimeUnit.MILLISECONDS.toHours(timePassed) % 24;
+            Timestamp currentTime = Timestamp.now();
+            Timestamp pTime = postModel.gettimeStamp();
+
+            long timePassed = currentTime.toDate().getTime() - pTime.toDate().getTime();
+            long hours = TimeUnit.MILLISECONDS.toHours(timePassed);
             long minutes = TimeUnit.MILLISECONDS.toMinutes(timePassed) % 60;
 
             String timeStamp;
@@ -273,7 +276,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             }
 
             timeTextView.setText(timeStamp);
-
             ImageLoader imageLoader = new ImageLoader(itemView.getContext());
             imageLoader.loadImage(postModel.getpImage(), postImage);
             getReactionType(postID, new reactionCallback() {

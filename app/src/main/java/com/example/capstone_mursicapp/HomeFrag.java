@@ -28,16 +28,19 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.auth.User;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -159,6 +162,7 @@ public class HomeFrag extends Fragment {
                                         Log.d("Post", "getting friend post");
                                         String pImage;
                                         pImage = documentSnapshot1.getString("pImage");
+                                        Timestamp postTime = documentSnapshot1.getTimestamp("timeStamp");
                                         boolean postExists = false;
                                         for (PostModel existingPost : post) {
                                             if (existingPost.getUserID().equals(friendID)) {
@@ -167,7 +171,7 @@ public class HomeFrag extends Fragment {
                                             }
                                         }
                                         if (!postExists) {
-                                            PostModel postModel = new PostModel(pImage, 0, friendID);
+                                            PostModel postModel = new PostModel(pImage, postTime, friendID);
                                             post.add(postModel);
                                             postAdapter.setPosts(post);
                                             postAdapter.notifyDataSetChanged();

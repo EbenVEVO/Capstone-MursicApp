@@ -1,12 +1,15 @@
 package com.example.capstone_mursicapp;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FieldValue;
+
 public class PostModel {
     String  pImage, userID;
-    long pTime;
+    Timestamp timeStamp;
 
-    public PostModel(String pImage, long pTime, String userID){
+    public PostModel(String pImage, Timestamp timeStamp, String userID){
         this.pImage = pImage;
-        this.pTime = pTime;
+        this.timeStamp = timeStamp;
         this.userID = userID;
 
     }
@@ -15,8 +18,8 @@ public class PostModel {
         return pImage;
     }
 
-    public long getpTime() {
-        return pTime;
+    public Timestamp gettimeStamp() {
+        return timeStamp;
     }
 
     public void setpImage(String pImage) {
@@ -24,8 +27,8 @@ public class PostModel {
     }
 
 
-    public void setpTime(long pTime) {
-        this.pTime = pTime;
+    public void setpTime(FieldValue pTime) {
+        this.timeStamp = timeStamp;
     }
 
 

@@ -39,6 +39,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Firebase;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -520,7 +521,8 @@ public class ProfileFrag extends Fragment {
 
                     //long time = documentSnapshot.getLong("pTime");
                     String postImage = documentSnapshot.getString("pImage");
-                    PostModel postModel = new PostModel(postImage,  0, userID);
+                    Timestamp postTime = documentSnapshot.getTimestamp("timeStamp");
+                    PostModel postModel = new PostModel(postImage, postTime, userID);
                     post.add(postModel);
                     postAdapter.setPosts(post);
                     postAdapter.notifyDataSetChanged();
