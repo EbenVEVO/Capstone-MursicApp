@@ -1,50 +1,45 @@
 package com.example.capstone_mursicapp;
 
-public class PostModel {
-    String pUsername, pProfilePic, pImage, songId, userID;
-    long pTime;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FieldValue;
 
-    public PostModel(String pUsername, String pImage, long pTime, String pProfilePic, String songId, String userID){
+public class PostModel {
+    String  pImage, userID, songID;
+    Timestamp timeStamp;
+
+    public PostModel(String pImage, Timestamp timeStamp, String songID, String userID){
         this.pImage = pImage;
-        this.pTime = pTime;
-        this.pUsername = pUsername;
-        this.pProfilePic = pProfilePic;
-        this.songId = songId;
+        this.timeStamp = timeStamp;
+        this.songID = songID;
         this.userID = userID;
 
+    }
+
+    public String getSongID() {
+        return songID;
+    }
+
+    public void setSongID(String songID) {
+        this.songID = songID;
     }
 
     public String getpImage() {
         return pImage;
     }
 
-    public String getpProfilePic() {
-        return pProfilePic;
-    }
-
-    public String getpUsername() {
-        return pUsername;
-    }
-
-    public long getpTime() {
-        return pTime;
+    public Timestamp gettimeStamp() {
+        return timeStamp;
     }
 
     public void setpImage(String pImage) {
         this.pImage = pImage;
     }
 
-    public void setpProfilePic(String pProfilePic) {
-        this.pProfilePic = pProfilePic;
+
+    public void setpTime(FieldValue pTime) {
+        this.timeStamp = timeStamp;
     }
 
-    public void setpTime(long pTime) {
-        this.pTime = pTime;
-    }
-
-    public void setpUsername(String pUsername) {
-        this.pUsername = pUsername;
-    }
 
     public String getUserID() {
         return userID;
@@ -52,12 +47,5 @@ public class PostModel {
 
     public void setUserID(String userID) {
         this.userID = userID;
-    }
-
-    public String getSongId() {
-        return pImage;
-    }
-    public String setSongId() {
-        return pImage;
     }
 }

@@ -29,16 +29,19 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.auth.User;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +74,8 @@ public class HomeFrag extends Fragment {
         postView = view.findViewById(R.id.postView);
         postAdapter = new PostAdapter(post);
         postView.setAdapter(postAdapter);
-
+        VerticalItemDecorator itemDecorator1 = new VerticalItemDecorator(40);
+        postView.addItemDecoration(itemDecorator1);
 
         loadFriendsPost();
 
@@ -140,10 +144,8 @@ public class HomeFrag extends Fragment {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             String userID = currentUser.getUid();
             db.collection("Users").document(userID).get().addOnSuccessListener(documentSnapshot -> {
-                Log.d("Post", "in user document");
                 if (documentSnapshot.exists()) {
                     List<Map<String, Object>> friends = (List<Map<String, Object>>) documentSnapshot.get("friends");
-
                     Log.d("Post", "getting user friends");
                     if (friends != null && !friends.isEmpty()) {
                         for (Map<String, Object> friendsMap : friends) {
@@ -161,16 +163,12 @@ public class HomeFrag extends Fragment {
 
                                         Log.d("Post", "getting friend post");
 
-                                        String pUsername, pProfilePic, pImage, songId;
+                                        String pImage, songId;
                                         pImage = documentSnapshot1.getString("pImage");
-                                        pImage = documentSnapshot1.getString("songId");
+                                        Timestamp postTime = documentSnapshot1.getTimestamp("timeStamp");
+                                        songId = documentSnapshot1.getString("songId");
 
-                                        pProfilePic = documentSnapshot1.getString("pProfilePic");
-                                        if (pProfilePic == null) {
-                                            int defaultProfilePicResId = R.drawable.default_pfp;
-                                            pProfilePic = String.valueOf(defaultProfilePicResId);
-                                        }
-                                        pUsername = documentSnapshot1.getString("pUsername");
+
                                         boolean postExists = false;
                                         for (PostModel existingPost : post) {
                                             if (existingPost.getUserID().equals(friendID)) {
@@ -179,7 +177,7 @@ public class HomeFrag extends Fragment {
                                             }
                                         }
                                         if (!postExists) {
-                                            PostModel postModel = new PostModel(pUsername, pImage, 0, pProfilePic, "test", friendID);
+                                            PostModel postModel = new PostModel(pImage, postTime, "test", friendID);
                                             post.add(postModel);
                                             postAdapter.setPosts(post);
                                             postAdapter.notifyDataSetChanged();

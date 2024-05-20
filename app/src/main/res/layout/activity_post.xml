@@ -31,6 +31,19 @@
             android:background="@drawable/baseline_music_note_24" />
     </RelativeLayout>
 
+    <TextView
+        android:layout_width="381dp"
+        android:layout_height="118dp"
+        android:id="@+id/choosesongprompt"
+        android:visibility="gone"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="56dp"
+        android:text="Click music note to choose song for your ___"
+        android:textAlignment="center"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toTopOf="@id/postImage"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/postImage"
         android:layout_width="match_parent"
@@ -45,10 +58,10 @@
     </com.makeramen.roundedimageview.RoundedImageView>
 
     <Button
+        android:id="@+id/postButton"
         android:layout_width="179dp"
         android:layout_height="48dp"
-        android:layout_marginTop="40dp"
-        android:id="@+id/postButton"
+        android:layout_marginTop="64dp"
         android:background="@drawable/button"
         android:text="POST"
         app:layout_constraintEnd_toEndOf="parent"
