@@ -132,10 +132,19 @@ public class PostActivity extends AppCompatActivity {
                             StorageReference profilePicsRef = storage.getReference().child("Posts/" + userID + "_" + timeStamp);
                             profilePicsRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
                                 profilePicsRef.getDownloadUrl().addOnSuccessListener(uri -> {
+
                                     String downloadUrl = uri.toString();
                                     PostModel postModel = new PostModel(downloadUrl, timeStamp, selectedSongId, userID);
+
+                                    Map<String, Object> postData = new HashMap<>();
+                                    postData.put("pImage", postModel.pImage);
+                                    postData.put("songId", postModel.songID); //NEED TO FIX LATER, JUST USE POST MODEL BUT CANT FIGURE OUT>>>
+                                    postData.put("userID", postModel.userID);
+                                    postData.put("timeStamp", postModel.timeStamp);
+
+
                                     db.collection("Posts").document(userID)
-                                            .set(postModel).addOnSuccessListener(aVoid -> {
+                                            .set(postData).addOnSuccessListener(aVoid -> {
                                             })
                                             .addOnFailureListener(e -> {
                                                 Toast.makeText(getApplicationContext(), "Failed to post image", Toast.LENGTH_SHORT).show();

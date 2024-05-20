@@ -31,18 +31,17 @@
             android:textSize="34sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <com.mikhaellopez.circularimageview.CircularImageView
-        android:id="@+id/profileImg"
-        android:layout_width="152dp"
-        android:layout_height="152dp"
-        android:layout_marginTop="60dp"
-        android:background="@drawable/pfp_holder"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_toolbar"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintVertical_bias="0.5"
-        ></com.mikhaellopez.circularimageview.CircularImageView>
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/profileImg"
+            android:layout_width="152dp"
+            android:layout_height="152dp"
+            android:layout_marginTop="60dp"
+            android:background="@drawable/pfp_holder"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/profile_toolbar"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintVertical_bias="0.5" />
 
 
     <TextView
@@ -66,18 +65,18 @@
         app:layout_constraintEnd_toEndOf="@id/profileImg"
         app:layout_constraintTop_toBottomOf="@id/username"/>
 
-    <Button
-        android:layout_width="200dp"
-        android:id="@+id/editprofile"
-        android:background="@drawable/button"
-        android:visibility="gone"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Edit Profile"
-        app:layout_constraintTop_toBottomOf="@id/bio"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        ></Button>
+        <Button
+            android:layout_width="200dp"
+            android:id="@+id/editprofile"
+            android:background="@drawable/button"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Edit Profile"
+            app:layout_constraintTop_toBottomOf="@id/bio"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <Button
             android:layout_width="150dp"
             android:id="@+id/addfriend"
@@ -88,8 +87,7 @@
             android:text="ADD FRIEND"
             app:layout_constraintTop_toBottomOf="@id/bio"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            ></Button>
+            app:layout_constraintEnd_toEndOf="parent" />
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -115,7 +113,7 @@
             android:textSize="34sp"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/username"
-            tools:layout_editor_absoluteX="0dp"></TextView>
+            tools:layout_editor_absoluteX="0dp" />
 
         <ImageButton
             android:id="@+id/addpost"
