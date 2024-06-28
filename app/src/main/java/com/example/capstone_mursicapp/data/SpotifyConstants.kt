@@ -18,6 +18,10 @@ object SpotifyConstants {
         set(value) {
             expiresIn = value
         }
+
+    fun initializeAccessToken(token:String){
+        localAccessToken = token
+    }
     private fun generateRandomString(len: Int): String {
         Log.i("Random", "generated random string")
         return (1..len)

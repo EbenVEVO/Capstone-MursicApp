@@ -75,16 +75,6 @@ public class SongPromptConfrim extends Fragment {
 
         promptView.setText(prompt);
         songNameView.setText(songName);
-        if (artistNames.size()>1) {
-            for (String artist : artistNames) {
-                artists = artist + ", ";
-            }
-        }
-        else {
-            for (String artist : artistNames) {
-                artists = artist;
-            }
-        }
         artistNameView.setText(artists);
 
 

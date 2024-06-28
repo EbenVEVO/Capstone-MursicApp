@@ -108,7 +108,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/uploadtext"
             android:layout_marginTop="100dp"
-            android:text="Upload your daily ____ "
+            android:text="Upload your daily post "
             android:textAlignment="center"
             android:textSize="34sp"
             android:visibility="gone"
@@ -225,10 +225,12 @@
             app:layout_constraintStart_toStartOf="parent"></TextView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint"
             android:layout_width="425dp"
             android:layout_height="268dp"
-            app:layout_constraintTop_toBottomOf="@id/songtitle"
-            tools:layout_editor_absoluteX="1dp">
+            android:layout_marginStart="1dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/songtitle">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/songsview"

@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 spotManager.getAccessToken(code);
             }
         }
-        {
+
             refreshTimer = new Timer();
             MainActivity.this.refreshTimer.schedule(new TimerTask() {
                 @Override
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 0, SpotifyConstants.INSTANCE.getExpiresIn() * 1000);
 
-        }
+
         FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(i);
                     finish();
                 } else {
+                    spotManager.refreshAccessToken();
                     bottomNav = findViewById(R.id.bottom_nav);
                     bottomNav.setSelectedItemId(R.id.home);
 

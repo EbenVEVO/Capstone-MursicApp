@@ -356,7 +356,7 @@ public class ProfileFrag extends Fragment {
                         uploadtext.setVisibility(View.VISIBLE);
 
                         ConstraintSet constraintSet = new ConstraintSet();
-                        //constraintSet.clone(constraintLayout); //ERROR
+                        constraintSet.clone(constraintLayout); //ERROR
                         int marginInDp = 35;
                         int marginInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, marginInDp, getResources().getDisplayMetrics());
                         constraintSet.connect(artisttile.getId(), ConstraintSet.TOP, R.id.addpost, ConstraintSet.BOTTOM, marginInPx);
@@ -368,7 +368,7 @@ public class ProfileFrag extends Fragment {
                                 if(hasArtists){
                                     Log.d("test", ":work bitch");
                                     ConstraintSet constraintSet = new ConstraintSet();
-                                    constraintSet.clone(constraintLayout);
+                                  constraintSet.clone(constraintLayout);
                                     int marginInDp = 35;
                                     int marginInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, marginInDp, getResources().getDisplayMetrics());
                                     constraintSet.connect(R.id.buttonwartist, ConstraintSet.TOP, R.id.addpost, ConstraintSet.BOTTOM, marginInPx);
